@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 
 namespace Swe2_tour_planer.Model
 {
@@ -12,7 +12,7 @@ namespace Swe2_tour_planer.Model
         private string _description;
         private string _imgSource;
         private ObservableCollection<LogEntry> _logEntries;
-        public TourEntry(string title,string description,string _imgSource,ObservableCollection<LogEntry> logEntries)
+        public TourEntry(string title, string description, string _imgSource, ObservableCollection<LogEntry> logEntries)
         {
             this.Title = title;
             this.Description = description;

@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 
 namespace Swe2_tour_planer.Model
 {
     class LogEntry : INotifyPropertyChanged
-       {
+    {
         public event PropertyChangedEventHandler PropertyChanged;
 
         private string _date;
@@ -20,7 +19,7 @@ namespace Swe2_tour_planer.Model
         private string _traffic;
         private int _nicenessOfLocals;
 
-        public LogEntry(string date,int duration,float distance,int rating,string report,float averageSpeed,int energyUsed,string wheater,string traffic,int nicenessOfLocals)
+        public LogEntry(string date, int duration, float distance, int rating, string report, float averageSpeed, int energyUsed, string wheater, string traffic, int nicenessOfLocals)
         {
 
         }
