@@ -1,27 +1,50 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
+using System;
 namespace Swe2_tour_planer.Model
 {
-    class LogEntry : INotifyPropertyChanged
+    public class LogEntry : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
         private string _date;
-        private int _duration;
-        private float _distance;
-        private int _rating;
+        private string _duration;
+        private string _distance;
+        private string _rating;
         private string _report;
 
-        private float _averageSpeed;
-        private int _energyUsed;
+        private string _averageSpeed;
+        private string _energyUsed;
         private string _wheater;
         private string _traffic;
-        private int _nicenessOfLocals;
+        private string _nicenessOfLocals;
 
-        public LogEntry(string date, int duration, float distance, int rating, string report, float averageSpeed, int energyUsed, string wheater, string traffic, int nicenessOfLocals)
+
+        private int _logID { get; set; }
+        private int _tourID_fk { get; set; }
+
+        public LogEntry(int logID,int tourID,string date, string duration, string distance, string rating, string report, string averageSpeed, string energyUsed, string wheater, string traffic, string nicenessOfLocals)
         {
-
+            _logID = logID;
+            Date = date;
+            Duration = duration;
+            Distance = distance;
+            Rating = rating;
+            Report = report;
+            AverageSpeed = averageSpeed;
+            EnergyUsed = energyUsed;
+            Wheater = wheater;
+            Traffic = traffic;
+            NicenessOfLocals = nicenessOfLocals;
+            _tourID_fk = tourID;
+        }
+        public int LogID
+        {
+            get => this._logID;
+        }
+        public int TourID
+        {
+            get => this._tourID_fk;
         }
         public string Date
         {
@@ -32,7 +55,7 @@ namespace Swe2_tour_planer.Model
                 this.OnPropertyChanged();
             }
         }
-        public int Duration
+        public string Duration
         {
             get => this._duration;
             set
@@ -41,7 +64,7 @@ namespace Swe2_tour_planer.Model
                 this.OnPropertyChanged();
             }
         }
-        public float Distance
+        public string Distance
         {
             get => this._distance;
             set
@@ -50,7 +73,7 @@ namespace Swe2_tour_planer.Model
                 this.OnPropertyChanged();
             }
         }
-        public int Rating
+        public string Rating
         {
             get => this._rating;
             set
@@ -68,7 +91,7 @@ namespace Swe2_tour_planer.Model
                 this.OnPropertyChanged();
             }
         }
-        public float AverageSpeed
+        public string AverageSpeed
         {
             get => this._averageSpeed;
             set
@@ -77,7 +100,7 @@ namespace Swe2_tour_planer.Model
                 this.OnPropertyChanged();
             }
         }
-        public int EnergyUsed
+        public string EnergyUsed
         {
             get => this._energyUsed;
             set
@@ -104,7 +127,7 @@ namespace Swe2_tour_planer.Model
                 this.OnPropertyChanged();
             }
         }
-        public int NicenessOfLocals
+        public string NicenessOfLocals
         {
             get => this._nicenessOfLocals;
             set

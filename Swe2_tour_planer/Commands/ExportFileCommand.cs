@@ -23,13 +23,13 @@ namespace Swe2_tour_planer.Commands
             };
         }
 
-        public bool CanExecute(object? parameter)
+        public bool CanExecute(object parameter)
         {
             Debug.Print("Command ExportFile: can execute?");
             return true;
         }
 
-        public void Execute(object? parameter)
+        public void Execute(object parameter)
         {
             Debug.Print($"ExportFile ExportFile: trying to execute ExportFileButton");
         }

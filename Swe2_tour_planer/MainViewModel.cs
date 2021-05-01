@@ -17,12 +17,15 @@ namespace Swe2_tour_planer
         public ICommand PrintReportCommand { get; }
         public ICommand SaveNewTourCommand { get; }
         public ICommand SaveNewTourLogCommand { get; }
-
         public ICommand SearchbarCommand { get; }
 
         private string _searchbar;
         private TourEntry _currentActiveTour;
 
+        private string _inputTitle;
+        private string _inputDescription;
+        private string _inputFrom;
+        private string _inputTo;
         public string Searchbar
         {
             get
@@ -41,7 +44,78 @@ namespace Swe2_tour_planer
                 }
             }
         }
+        public string InputTitle
+        {
+            get
+            {
+                return _inputTitle;
+            }
+            set
+            {
+                if (InputTitle != value)
+                {
+                    Debug.Print("set _inputTitle");
+                    _inputTitle = value;
 
+                    Debug.Print("fire propertyChanged: _inputTitle");
+                    OnPropertyChanged(nameof(InputTitle));
+                }
+            }
+        }
+        public string InputDescription
+        {
+            get
+            {
+                return _inputDescription;
+            }
+            set
+            {
+                if (_inputDescription != value)
+                {
+                    Debug.Print("set _inputDescription");
+                    _inputDescription = value;
+
+                    Debug.Print("fire propertyChanged: _inputTitle");
+                    OnPropertyChanged(nameof(InputDescription));
+                }
+            }
+        }
+        public string InputTo
+        {
+            get
+            {
+                return _inputTo;
+            }
+            set
+            {
+                if (_inputTo != value)
+                {
+                    Debug.Print("set _inputTo");
+                    _inputTo = value;
+
+                    Debug.Print("fire propertyChanged: _inputTitle");
+                    OnPropertyChanged(nameof(InputTo));
+                }
+            }
+        }
+        public string InputFrom
+        {
+            get
+            {
+                return _inputFrom;
+            }
+            set
+            {
+                if (_inputFrom != value)
+                {
+                    Debug.Print("set _inputFrom");
+                    _inputFrom = value;
+
+                    Debug.Print("fire propertyChanged: _inputTitle");
+                    OnPropertyChanged(nameof(InputFrom));
+                }
+            }
+        }
         public TourEntry CurrentActiveTour
         {
             get

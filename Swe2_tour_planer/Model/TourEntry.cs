@@ -4,20 +4,47 @@ using System.Runtime.CompilerServices;
 
 namespace Swe2_tour_planer.Model
 {
-    class TourEntry : INotifyPropertyChanged
+    public class TourEntry : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private int _tourID;
         private string _title;
         private string _description;
         private string _imgSource;
-        private ObservableCollection<LogEntry> _logEntries;
-        public TourEntry(string title, string description, string _imgSource, ObservableCollection<LogEntry> logEntries)
+        private string _from;
+        private string _too;
+        public TourEntry(int tourID, string title, string description, string _imgSource,string from,string too)
         {
             this.Title = title;
             this.Description = description;
             this.ImgSource = _imgSource;
-            this.LogEntries = logEntries;
+            this._tourID = tourID;
+        }
+
+        public string Too
+        {
+            get => this._too;
+            set
+            {
+                this._too = value;
+                this.OnPropertyChanged();
+            }
+        }
+        public string From
+        {
+            get => this._from;
+            set
+            {
+                this._from = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+
+        public int TourID
+        {
+            get => this._tourID;
         }
 
         public string Title
@@ -44,15 +71,6 @@ namespace Swe2_tour_planer.Model
             set
             {
                 this._imgSource = value;
-                this.OnPropertyChanged();
-            }
-        }
-        public ObservableCollection<LogEntry> LogEntries
-        {
-            get => this._logEntries;
-            set
-            {
-                this._logEntries = value;
                 this.OnPropertyChanged();
             }
         }

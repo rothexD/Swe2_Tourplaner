@@ -6,17 +6,18 @@
         xmlns:local="clr-namespace:Swe2_tour_planer"
         xmlns:designViewModel="clr-namespace:Swe2_tour_planer.DesignViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="900">
+        Title="TourTool :)" Height="600" Width="900">
     <!-- d:DataContext="{d:DesignInstance Type=designViewModel:DesignMainViewModel, IsDesignTimeCreatable=True}" -->
 
     <Window.DataContext>
         <designViewModel:DesignMainViewModel />
+        <!-- <local:MainViewModel/> -->
     </Window.DataContext>
 
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
@@ -30,9 +31,9 @@
             <Button  VerticalAlignment="Top" Command="{Binding ExportCommand}" Height="30" Margin="82,39,0,0" HorizontalAlignment="Left" Width="66">Export File</Button>
             <Button  VerticalAlignment="Top" Command="{Binding PrintReportCommand}" Height="30" Margin="153,39,0,0" HorizontalAlignment="Left" Width="87">Create Report</Button>
             <!--<Button  VerticalAlignment="Top" Height="26" Margin="80,0,0,0" Grid.Column="2">Help :c</Button>-->
-            <TextBox Grid.Column="1" Margin="0,39,15,0" Text="{Binding Searchbar,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" />
-            <Button  Grid.Column="2" Command="{Binding SearchbarCommand}"  VerticalAlignment="Top" Height="30"  Margin="0,39,10,0">Find-Me :)</Button>
-            <Button Grid.Column="2" Command="{Binding  DemoSwitchTourCommand}" Margin="0,0,10,63" >DemoSwitchActiveTour</Button>
+            <TextBox Grid.Column="1" Margin="7,39,8,0" Text="{Binding Searchbar,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" TextChanged="TextBox_TextChanged" />
+            <Button  Grid.Column="2" Command="{Binding SearchbarCommand}"  VerticalAlignment="Top" Height="30"  Margin="5,39,5,0">Find-Me :)</Button>
+            <Button Grid.Column="2" Command="{Binding  DemoSwitchTourCommand}" Margin="0,0,10,63" Click="Button_Click" >DemoSwitchActiveTour</Button>
         </Grid>
         <Grid Grid.Row="1" >
             <Grid.ColumnDefinitions>
@@ -42,7 +43,7 @@
             <Label   Grid.Column="0" Margin="70,0,40,0" VerticalAlignment="Center" Height="32" FontSize="15">Tours</Label>
 
             <Grid Grid.Column="1">
-                <Label Grid.Column="0" VerticalAlignment="Center" Target="{Binding CurrentActiveTour.Title}"  Height="25" FontSize="15" >Title:</Label>
+                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding CurrentActiveTour.Title}"  Height="32" FontSize="16"></Label>
             </Grid>
         </Grid>
         <Grid Grid.Row="2">
@@ -53,7 +54,7 @@
             <TabControl  Margin="5,5,5,5">
                 <TabItem Header="Tours">
                     <Grid Background="#FFE5E5E5">
-                        <DataGrid ItemsSource="{Binding Data}" AutoGenerateColumns="False" AlternatingRowBackground="LightGray" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" HeadersVisibility="None">
+                        <DataGrid ItemsSource="{Binding Data}" AutoGenerateColumns="False" AlternatingRowBackground="LightGray" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HeadersVisibility="None">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}" Width="167"/>
                                 <!-- https://stackoverflow.com/questions/10892233/add-delete-button-for-every-row-in-datagrid-->
@@ -77,8 +78,15 @@
                 </TabItem>
                 <TabItem Header="+" Margin="169,-2,-173,0">
                     <Grid Background="#FFE5E5E5">
-
-
+                        <TextBox HorizontalAlignment="Left" Margin="10,34,0,0" Text="{Binding InputTitle,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Height="20"/>
+                        <TextBox HorizontalAlignment="Left" Margin="10,89,0,0" Text="{Binding InputDescription,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Height="20"/>
+                        <TextBox HorizontalAlignment="Left" Margin="10,144,0,0" Text="{Binding InputFrom,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Height="22"/>
+                        <TextBox HorizontalAlignment="Left" Margin="10,190,0,0" Text="{Binding InputTo,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Height="22"/>
+                        <Button HorizontalAlignment="Left"  Margin="74,239,0,0" VerticalAlignment="Top" Command="{Binding SaveNewTourCommand}" Height="35" Width="74">Save</Button>
+                        <Label  HorizontalAlignment="Left" Margin="10,3,0,0" VerticalAlignment="Top">title</Label>
+                        <Label  HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top">description</Label>
+                        <Label  HorizontalAlignment="Left" Margin="10,113,0,0" VerticalAlignment="Top">from</Label>
+                        <Label  HorizontalAlignment="Left" Margin="10,166,0,0" VerticalAlignment="Top">to</Label>
 
 
                     </Grid>
@@ -103,7 +111,7 @@
                         </TabItem>
                         <TabItem Header="Image">
                             <Grid Background="#FFE5E5E5">
-                                    <Image HorizontalAlignment="Left" Height="164" Margin="10,10,0,0" VerticalAlignment="Top" Width="525" Source="{Binding CurrentActiveTour.ImgSource}" Grid.ColumnSpan="2"/>
+                                <Image HorizontalAlignment="Left" Height="164" Margin="10,10,0,0" VerticalAlignment="Top" Width="525" Source="{Binding CurrentActiveTour.ImgSource}" Grid.ColumnSpan="2"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -125,5 +133,6 @@
                 </Grid>
             </Grid>
         </Grid>
+
     </Grid>
 </Window>

@@ -49,7 +49,7 @@ namespace Swe2_tour_planer.Commands
 
         public void Execute(object? parameter)
         {
-            Debug.Print($"ExportFile DemoSwitchTourCommand: trying to execute DemoSwitchTourCommand");
+            Debug.Print($"DemoSwitchTourCommand: trying to execute DemoSwitchTourCommand");
             if(_mainViewModel.CurrentActiveTour == null)
             {
                 _mainViewModel.CurrentActiveTour = Get_Tour2();
