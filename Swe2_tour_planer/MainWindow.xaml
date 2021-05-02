@@ -10,8 +10,7 @@
     <!-- d:DataContext="{d:DesignInstance Type=designViewModel:DesignMainViewModel, IsDesignTimeCreatable=True}" -->
 
     <Window.DataContext>
-        <designViewModel:DesignMainViewModel />
-        <!-- <local:MainViewModel/> -->
+        <local:MainViewModel/>
     </Window.DataContext>
 
     <Grid Margin="5">

@@ -18,32 +18,7 @@ namespace Swe2_tour_planer.DesignViewModel
             this.DemoSwitchTourCommand = new DemoSwitchTourCommand(this);
             var item = new ObservableCollection<LogEntry>();
             item.Add(new LogEntry(1,2,"12.07.2020", "150", "120", "5", "ein toller ausflug", "5", "2", "cloudy", "busy", "4"));
-            Data.Add(new TourEntry(1,"hans", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1,"franz", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
-            Data.Add(new TourEntry(1, "guenter", "auf reisen", "panda.jpg"));
+
         }
     }
 }

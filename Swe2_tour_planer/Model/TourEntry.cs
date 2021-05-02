@@ -1,6 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Swe2_tour_planer.Model;
+using Swe2_tour_planer.helpers;
+using System.Collections.Generic;
+using static Swe2_tour_planer.helpers.MapQuestJson;
+using Newtonsoft.Json;
 
 namespace Swe2_tour_planer.Model
 {
@@ -14,12 +19,23 @@ namespace Swe2_tour_planer.Model
         private string _imgSource;
         private string _from;
         private string _too;
-        public TourEntry(int tourID, string title, string description, string _imgSource,string from,string too)
+        private ObservableCollection<CustomManeuvers> _maneuvers = new ObservableCollection<CustomManeuvers>();
+        public TourEntry(int tourID, string title, string description, string _imgSource,string from,string too,string Jsonmaneuvers)
         {
             this.Title = title;
             this.Description = description;
             this.ImgSource = _imgSource;
             this._tourID = tourID;
+            Maneuvers = JsonConvert.DeserializeObject<ObservableCollection<CustomManeuvers>>(Jsonmaneuvers);
+        }
+        public ObservableCollection<CustomManeuvers> Maneuvers
+        {
+            get => this._maneuvers;
+            set
+            {
+                this._maneuvers = value;
+                this.OnPropertyChanged();
+            }
         }
 
         public string Too

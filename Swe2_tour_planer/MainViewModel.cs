@@ -132,7 +132,9 @@ namespace Swe2_tour_planer
                 OnPropertyChanged(nameof(CurrentActiveTour.Title));
                 OnPropertyChanged(nameof(CurrentActiveTour.Description));
                 OnPropertyChanged(nameof(CurrentActiveTour.ImgSource));
-                OnPropertyChanged(nameof(CurrentActiveTour.LogEntries));
+                OnPropertyChanged(nameof(CurrentActiveTour.From));
+                OnPropertyChanged(nameof(CurrentActiveTour.Too));
+                OnPropertyChanged(nameof(CurrentActiveTour.Maneuvers));
             }
         }
 

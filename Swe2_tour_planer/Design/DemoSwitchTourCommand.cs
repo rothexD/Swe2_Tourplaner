@@ -12,20 +12,7 @@ namespace Swe2_tour_planer.Commands
         private const string PandaPath = @"C:\Users\rothexD\Documents\GitHub\SWE-2_TourPlaner\Swe2_tour_planer\panda.jpg";
         private const string VillagePath = @"C:\Users\rothexD\Pictures\richi.jpg";
         private readonly MainViewModel _mainViewModel;
-        public event EventHandler? CanExecuteChanged;
-        
-        private static TourEntry Get_Tour1()
-        {
-             ObservableCollection<LogEntry> item = new ObservableCollection<LogEntry>();
-            item.Add(new LogEntry("12.07.2020", 150, 120, 5, "ein toller ausflug", 5, 2, "cloudy", "busy", 4));
-             return  new TourEntry("Example1", "Example1 short text,panda", PandaPath, item);
-    }
-        private static TourEntry Get_Tour2()
-        {
-            ObservableCollection<LogEntry> item = new ObservableCollection<LogEntry>();
-            item.Add(new LogEntry("12.07.2020", 150, 120, 5, "ein toller ausflug", 5, 2, "cloudy", "busy", 4));
-            return new TourEntry("Example2", $"{longtext},village,", VillagePath, item);
-        }
+        public event EventHandler? CanExecuteChanged;     
 
         public DemoSwitchTourCommand(MainViewModel mainViewModel)
         {
@@ -49,19 +36,6 @@ namespace Swe2_tour_planer.Commands
 
         public void Execute(object? parameter)
         {
-            Debug.Print($"DemoSwitchTourCommand: trying to execute DemoSwitchTourCommand");
-            if(_mainViewModel.CurrentActiveTour == null)
-            {
-                _mainViewModel.CurrentActiveTour = Get_Tour2();
-                return;
-            }
-            if(_mainViewModel.CurrentActiveTour.Title == "Example1")
-            {
-                _mainViewModel.CurrentActiveTour = Get_Tour2();
-                return;
-            }
-
-            _mainViewModel.CurrentActiveTour = Get_Tour1();
             return;
         }
     }

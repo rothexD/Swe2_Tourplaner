@@ -59,13 +59,8 @@ namespace Swe2_tour_planer.Commands
         }
 
         public void Execute(object? parameter)
-        {
-            _mainViewModel.Data.Add(new TourEntry(_mainViewModel.InputTitle, _mainViewModel.InputDescription, "bla", new System.Collections.ObjectModel.ObservableCollection<LogEntry>()));
-            _mainViewModel.InputTitle = "";
-            _mainViewModel.InputDescription = "";
-            _mainViewModel.InputFrom = "";
-            _mainViewModel.InputTo = "";
-            Debug.Print($"SaveNewTourCommand: trying to execute SaveNewTourCommand");
+        {           
+            
         }
     }
 }
