@@ -16,7 +16,9 @@ namespace Swe2_tour_planer.helpers
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public static NpgsqlConnection ConnectObj()
         {
-            return new NpgsqlConnection(config["Database:ConnectionString"]);
+            var i = new NpgsqlConnection(config["Database:ConnectionString"]);
+            i.Open();
+            return i;
         }
         public Databasehelper(bool ShouldDoTableExistsCheck = false)
         {
@@ -35,9 +37,9 @@ namespace Swe2_tour_planer.helpers
                                         title varchar,
                                         description varchar,
                                         imgSource varchar,
-                                        from varchar,
+                                        fromL varchar,
                                         too varchar,
-                                        ,aneuvers varchar
+                                        maneuvers varchar
                                     );";
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
@@ -56,12 +58,13 @@ namespace Swe2_tour_planer.helpers
                                         wheater varchar,
                                         traffic varchar,
                                         nicenessoflocals varchar,
-                                        FOREIGN KEY(tourID_fk) REFERENCES Tour(tourID) ON DELETE CASCADE
+                                        FOREIGN KEY(tourID_fk) REFERENCES TourEntry(tourID) ON DELETE CASCADE
                                     );";
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
+                conn.Close();
             }
             catch(Exception e)
             {
@@ -70,7 +73,6 @@ namespace Swe2_tour_planer.helpers
                 log.Debug(e.Message);
                 throw new Exception();
             }
-
         }
         
         
@@ -95,8 +97,11 @@ namespace Swe2_tour_planer.helpers
                         var item = new TourEntry(Int32.Parse(reader[0].ToString()), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString());
                         TourList.Add(item);
                     }
+                    log.Debug("get List of tours success");
+                    conn.Close();
                     return TourList;
-                }
+                   
+                }              
             }
             catch(Exception e)
             {
@@ -104,8 +109,7 @@ namespace Swe2_tour_planer.helpers
                 log.Debug(e.StackTrace);
                 log.Debug(e.Message);
                 throw new Exception();
-            }
-            
+            }        
         }
         static public async Task<ObservableCollection<LogEntry>> GetListOfLogs(int TourID)
         {
@@ -128,7 +132,8 @@ namespace Swe2_tour_planer.helpers
                         reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
                     TourList.Add(item);
                 }
-                return TourList;
+                    conn.Close();
+                    return TourList;
             }
             }
             catch (Exception e)
@@ -138,6 +143,95 @@ namespace Swe2_tour_planer.helpers
                 log.Debug(e.Message);
                 throw new Exception();
             }
-        }      
+        }
+
+        static public async Task<int> RemoveTour(int ID)
+        {
+            try
+            {
+                string querystring = @$"Delete from TourEntry where tourID = {ID} ";
+                var conn = Databasehelper.ConnectObj();
+                using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+                conn.Close();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Removing of Tour failed");
+                log.Debug(e.StackTrace);
+                log.Debug(e.Message);
+                throw new Exception();
+            }
+        }
+
+        static public async Task<int> RemoveLog(int ID)
+        {
+            try
+            {
+                string querystring = @$"Delete from LogEntry where logID = {ID} ";
+                var conn = Databasehelper.ConnectObj();
+                using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
+                {
+                    await command.ExecuteNonQueryAsync();
+
+                }
+                conn.Close();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Remove of Log failed");
+                log.Debug(e.StackTrace);
+                log.Debug(e.Message);
+                throw new Exception();
+            }
+        }
+        static public async Task<int> RemoveAllTour()
+        {
+            try
+            {
+                string querystring = @$"Delete from TourEntry";
+                var conn = Databasehelper.ConnectObj();
+                using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+                conn.Close();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Removing of All Tour failed");
+                log.Debug(e.StackTrace);
+                log.Debug(e.Message);
+                throw new Exception();
+            }
+        }
+
+        static public async Task<int> RemoveAllLog()
+        {
+            try
+            {
+                string querystring = @$"Delete from LogEntry";
+                var conn = Databasehelper.ConnectObj();
+                using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
+                {
+                    await command.ExecuteNonQueryAsync();
+
+                }
+                conn.Close();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Remove of All Log failed");
+                log.Debug(e.StackTrace);
+                log.Debug(e.Message);
+                throw new Exception();
+            }
+        }
     }
 }

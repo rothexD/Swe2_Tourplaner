@@ -26,7 +26,9 @@ namespace Swe2_tour_planer.Model
             this.Description = description;
             this.ImgSource = _imgSource;
             this._tourID = tourID;
-            Maneuvers = JsonConvert.DeserializeObject<ObservableCollection<CustomManeuvers>>(Jsonmaneuvers);
+            this.From = from;
+            this.Too = too;
+            Maneuvers = JsonConvert.DeserializeObject<ObservableCollection<CustomManeuvers>>(Jsonmaneuvers??"");
         }
         public ObservableCollection<CustomManeuvers> Maneuvers
         {

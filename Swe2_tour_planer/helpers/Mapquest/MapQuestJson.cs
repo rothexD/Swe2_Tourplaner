@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Swe2_tour_planer.helpers
@@ -479,6 +480,21 @@ namespace Swe2_tour_planer.helpers
             public string Index { get; set; }
             [JsonProperty("distance")]
             public string DistanceInMiles { get; set; }
+
+            [JsonIgnore]
+            public string DistanceInKm {
+                get
+                {
+                    return this.DistanceInKm();
+                }
+            }
+            [JsonIgnore]
+            public string StreetsAsString {
+                get
+                {
+                    return Streets.Count != 0 ? Streets.Aggregate((i, j) => i + "," + j) : "";
+                }
+            }
         }
     }
 }

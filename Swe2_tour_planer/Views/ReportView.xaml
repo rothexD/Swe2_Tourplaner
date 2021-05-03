@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Swe2_tour_planer.Views.ReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Swe2_tour_planer.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <Grid Background="#FFE5E5E5" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox HorizontalAlignment="Left" Margin="194,154,0,0" Text="{Binding SaveReportToPath,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="623" Height="20" Grid.ColumnSpan="2"/>
+        <Button HorizontalAlignment="Left"  Margin="337,200,0,0" VerticalAlignment="Top" Command="{Binding ReportCommand}" FontSize="15" Height="34" Width="272" Grid.ColumnSpan="2">Create pdf :)</Button>
+        <Label  HorizontalAlignment="Left" Margin="425,119,0,0" FontSize="15" VerticalAlignment="Top" Grid.ColumnSpan="2">Full File-path</Label>
+        <Button HorizontalAlignment="Left"  Margin="436,264,0,0" VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="HomeView" FontSize="15" Height="36" Width="74">Home</Button>
+        <Label Margin="116,339,394,0" FontSize="15" Content="{Binding Statusmessage}" Foreground="{Binding Statuscolor}" Width="Auto"/>
+    </Grid>
+</UserControl>

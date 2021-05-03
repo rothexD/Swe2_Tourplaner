@@ -12,7 +12,7 @@ namespace Swe2_tour_planer.helpers
     public static class logEntryExtentions
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        static public async void AddLog(this LogEntry newEntry)
+        static public async Task<int> AddLogToDatabase(this LogEntry newEntry)
         {
             try
             {
@@ -27,13 +27,48 @@ namespace Swe2_tour_planer.helpers
                                     '{newEntry.EnergyUsed}',
                                     '{newEntry.Wheater}',
                                     '{newEntry.Traffic}',
-                                    '{newEntry.NicenessOfLocals}',
+                                    '{newEntry.NicenessOfLocals}'
                                     );";
                 var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
+                conn.Close();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("inserting new Log into db failed");
+                log.Debug(e.StackTrace);
+                log.Debug(e.Message);
+                throw new Exception();
+            }
+        }
+        static public async Task<int> AddLogToDatabase(this LogEntry newEntry,int id)
+        {
+            try
+            {
+                string querystring = @$"Insert into LogEntry(tourID_fk,date,duration,distance,rating,report,averagespeed,energyused,wheater,traffic,nicenessoflocals) values (
+                                    {id},
+                                    '{newEntry.Date}',
+                                    '{newEntry.Duration}',
+                                    '{newEntry.Distance}',
+                                    '{newEntry.Rating}',
+                                    '{newEntry.Report}',
+                                    '{newEntry.AverageSpeed}',
+                                    '{newEntry.EnergyUsed}',
+                                    '{newEntry.Wheater}',
+                                    '{newEntry.Traffic}',
+                                    '{newEntry.NicenessOfLocals}'
+                                    );";
+                var conn = Databasehelper.ConnectObj();
+                using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+                conn.Close();
+                return 0;
             }
             catch (Exception e)
             {
@@ -44,16 +79,19 @@ namespace Swe2_tour_planer.helpers
             }
         }
 
-        static public async void RemoveLog(this LogEntry newEntry)
+        static public async Task<int> RemoveLogFromDatabase(this LogEntry newEntry)
         {
             try
             {
-                string querystring = @$"Delete from TourEntry where logID = {newEntry.LogID} ";
+                string querystring = @$"Delete from LogEntry where logID = {newEntry.LogID} ";
                 var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
+                conn.Close();
+
+                return 0;
             }
             catch (Exception e)
             {
@@ -64,7 +102,7 @@ namespace Swe2_tour_planer.helpers
             }
         }
 
-        static public async void UpdateLog(this LogEntry updateEntry)
+        static public async Task<int> UpdateLogInDatabase(this LogEntry updateEntry)
         {
             try
             {
@@ -78,12 +116,14 @@ namespace Swe2_tour_planer.helpers
                                 energyused='{updateEntry.EnergyUsed}',
                                 wheater='{updateEntry.Wheater}',
                                 traffic='{updateEntry.Traffic}',
-                                nicenessoflocals='{updateEntry.NicenessOfLocals}' where logID = {updateEntry.LogID}";
+                                nicenessoflocals='{updateEntry.NicenessOfLocals}' where LogID = {updateEntry.LogID}";
                 var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
+                conn.Close();
+                return 0;
             }
             catch (Exception e)
             {

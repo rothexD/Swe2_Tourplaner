@@ -8,7 +8,7 @@ using Swe2_tour_planer.Model;
 
 namespace Swe2_tour_planer.helpers
 {
-    class DinkToPdf
+    public class DinkToPdfClass
     {
         public static string TourAndLogToHtml(TourEntry Tour, List<LogEntry> Logs)
         {
@@ -39,9 +39,11 @@ namespace Swe2_tour_planer.helpers
             string LogHtml = HeadingHtml("2", "TourLogs");
             float Sumduration = 0;
             float Sumdistance = 0;
+            int z = 0;
             Log.ForEach(x =>
             {
             LogHtml += "<br>";
+            LogHtml += HeadingHtml("3", $"Log: {++z}");
             LogHtml += ParagraphHtml($"Date: {x.Date}");
             LogHtml += ParagraphHtml($"Duration: {x.Duration}");
             LogHtml += ParagraphHtml($"Distance: {x.Distance}");

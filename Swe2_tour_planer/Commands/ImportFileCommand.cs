@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Input;
+using Swe2_tour_planer.ViewModels;
+using System.IO;
+using Swe2_tour_planer.helpers;
+using Swe2_tour_planer.Model;
+using System.Collections.Generic;
 
 namespace Swe2_tour_planer.Commands
 {
     class ImportFileCommand : ICommand
     {
-        private readonly MainViewModel _mainViewModel;
+        private readonly HomeViewModel _homeViewModel;
+        private readonly ImportViewModel _importViewModel;
         public event EventHandler? CanExecuteChanged;
-
-        public ImportFileCommand(MainViewModel mainViewModel)
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public ImportFileCommand(ImportViewModel importViewModel, HomeViewModel home)
         {
 
-            this._mainViewModel = mainViewModel;
-            _mainViewModel.PropertyChanged += (sender, args) =>
+            this._homeViewModel = home;
+            this._importViewModel = importViewModel;
+            _importViewModel.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == "ImportFile")
+                if (args.PropertyName == "ImportPath")
                 {
-                    Debug.Print("command: ImportFile triggered");
                     CanExecuteChanged?.Invoke(this, EventArgs.Empty);
                 }
             };
@@ -25,13 +31,49 @@ namespace Swe2_tour_planer.Commands
 
         public bool CanExecute(object? parameter)
         {
-            Debug.Print("Command ImportFile: can execute?");
+            if (string.IsNullOrWhiteSpace(_importViewModel.ImportPath))
+            {
+                return false;
+            }
             return true;
         }
 
-        public void Execute(object? parameter)
+        public async void Execute(object? parameter)
         {
-            Debug.Print($"ImportFile command: trying to execute ImportFile-Button");
+            if (!File.Exists(_importViewModel.ImportPath))
+            {
+                log.Error($"File does not exist path: {_importViewModel.ImportPath}");
+                return;
+            }
+            if(parameter.ToString() == "Overwrite")
+            {
+                await Databasehelper.RemoveAllLog();
+                await Databasehelper.RemoveAllTour();
+            }
+            try
+            {
+                List<LogsAndTours> list = ImportExporthelper.ImportFromJsonFile(_importViewModel.ImportPath);
+                list.ForEach(async x =>
+                {
+                    var id = await x.Tour.AddTourToDatabase();
+                    x.Logs.ForEach(async y =>
+                    {
+                        await y.AddLogToDatabase(id);
+                    });
+                });
+                log.Info("import from file success");
+                _homeViewModel.OnPropertyChanged("ListTourEntryRefresh");
+                if (parameter.ToString() == "Overwrite")
+                {
+                    _homeViewModel.CurrentActiveTour = null;
+                }
+            }         
+            catch(Exception e)
+            {
+                log.Error("Could not import file");
+                log.Debug(e.Message);
+                return;
+            }       
         }
     }
 }

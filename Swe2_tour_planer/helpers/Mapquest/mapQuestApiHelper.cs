@@ -27,7 +27,7 @@ namespace Swe2_tour_planer.helpers
                 var response = await client.GetAsync(uri);
 
                 string id = Guid.NewGuid().GetHashCode().ToString();
-                id += DateTime.Now.ToString();
+                id += Guid.NewGuid().GetHashCode().ToString();
                 id += ".jpg";
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {

@@ -12,13 +12,30 @@ namespace Swe2_tour_planer.helpers
     class ImportExporthelper
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public static async void ExportToJsonFile(string path,string filename, LogsAndTours toExport)
+        public static async void ExportToJsonFile(string path,string filename, List<LogsAndTours> toExport)
         {
-            await File.WriteAllTextAsync("path" + filename, JsonConvert.SerializeObject(toExport));             
-        }
-        public static LogsAndTours ImportFromJsonFile(string fullpath)
+            try
+            {
+                await File.WriteAllTextAsync(path + filename, JsonConvert.SerializeObject(toExport));
+            }
+            catch (Exception e)
+            {
+                log.Error("could not serialize file");
+                log.Debug(e.Message);
+            }
+}
+        public static List<LogsAndTours> ImportFromJsonFile(string fullpath)
         {
-          return JsonConvert.DeserializeObject<LogsAndTours>(File.ReadAllText(fullpath));
+            try
+            {
+                return JsonConvert.DeserializeObject<List<LogsAndTours>>(File.ReadAllText(fullpath));
+            }
+            catch(Exception e)
+            {
+                log.Error("could not deserialize file");
+                log.Debug(e.Message);
+                return new List<LogsAndTours>();
+            }      
         }
     }
 }

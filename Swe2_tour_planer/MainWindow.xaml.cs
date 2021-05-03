@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Swe2_tour_planer.ViewModels;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 namespace Swe2_tour_planer
@@ -10,7 +11,8 @@ namespace Swe2_tour_planer
     {
         public MainWindow()
         {
-            InitializeComponent();
+            DataContext = new MainViewModel();
+            InitializeComponent();       
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -19,6 +21,11 @@ namespace Swe2_tour_planer
         }
 
         private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TabControl_SelectionChanged()
         {
 
         }

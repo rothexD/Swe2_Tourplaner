@@ -13,24 +13,38 @@ namespace Swe2_tour_planer.helpers
     public static class tourEntryDbExtentions
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        static public async Task<int> AddTour(this TourEntry newEntry)
+        static public async Task<int> AddTourToDatabase(this TourEntry newEntry)
         {
             try
             {
-                string querystring = @$"Insert into TourEntry(title,description,imgSource,from,too,maneuvers) values ('{newEntry.Title}','{newEntry.Description}','{newEntry.ImgSource}','{newEntry.From}','{newEntry.Too}','{JsonConvert.SerializeObject(newEntry.Maneuvers)}');";
+                string querystring = @$"Insert into TourEntry(title,description,imgSource,fromL,too,maneuvers) values ('{newEntry.Title}','{newEntry.Description}','{newEntry.ImgSource}','{newEntry.From}','{newEntry.Too}','{JsonConvert.SerializeObject(newEntry.Maneuvers)}');";
                 var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
-                    querystring = @$"Select LASTVAL();";
+                    querystring = @$"Select max(tourID) from TourEntry";
                     using (NpgsqlCommand command2 = new NpgsqlCommand(querystring, conn))
                     {
-                        var reader = await command2.ExecuteReaderAsync();
-                        if (reader.HasRows)
+                        try
                         {
-                            return Int32.Parse(reader[0].ToString());
+                            var reader = await command2.ExecuteReaderAsync();                       
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                Console.WriteLine(reader[0].ToString());
+                                conn.Close();
+                                return Int32.Parse(reader[0].ToString());
+                            }
+                            conn.Close();
+                            return -1;
                         }
-                        return -1;
+                        catch(Exception e)
+                        {
+                            log.Error(e.Message);
+                            log.Error("lastval failed");
+                            throw new Exception();
+                        }
+                       
                     }
                 }
             }
@@ -39,10 +53,11 @@ namespace Swe2_tour_planer.helpers
                 log.Error("Adding of new Tour Failed");
                 log.Debug(e.StackTrace);
                 log.Debug(e.Message);
+                log.Info(newEntry);
                 throw new Exception();
             }
         }
-        static public async void RemoveTour(this TourEntry newEntry)
+        static public async Task<int> RemoveTourFromDatabase(this TourEntry newEntry)
         {
             try
             {
@@ -52,6 +67,9 @@ namespace Swe2_tour_planer.helpers
                 {
                     await command.ExecuteNonQueryAsync();
                 }
+                conn.Close();
+
+                return 0;
             }
             catch (Exception e)
             {
@@ -61,7 +79,7 @@ namespace Swe2_tour_planer.helpers
                 throw new Exception();
             }
         }
-        static public async void UpdateTour(this TourEntry updateEntry)
+        static public async Task<int> UpdateTourInDatabase(this TourEntry updateEntry)
         {
             try
             {
@@ -71,6 +89,8 @@ namespace Swe2_tour_planer.helpers
                 {
                     await command.ExecuteNonQueryAsync();
                 }
+                conn.Close();
+                return 0;
             }
             catch (Exception e)
             {
