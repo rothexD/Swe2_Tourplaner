@@ -14,26 +14,27 @@ using System.Windows.Input;
 
 namespace Swe2_tour_planer.ViewModels
 {
-    public class AddLogEntryViewModel : BaseViewModel, INotifyPropertyChanged
+    public class UpdateLogViewModel : BaseViewModel, INotifyPropertyChanged
     {
         private readonly MainViewModel _mainviewModel;
         private readonly HomeViewModel _homeviewModel;
         public event PropertyChangedEventHandler PropertyChanged;
         public ICommand SaveLogCommand { get; }
         public ICommand SwitchView { get; }
+        public ICommand UpdateLogRelay { get; }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             Debug.Print($"propertyChanged \"{propertyName}\"");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public AddLogEntryViewModel(MainViewModel main, HomeViewModel home)
+        public UpdateLogViewModel(MainViewModel main, HomeViewModel home)
         {
             _mainviewModel = main;
             _homeviewModel = home;
-            SaveLogCommand = new SaveNewTourLogCommand(this, _homeviewModel);
             SwitchView = new SwitchViewCommand(_mainviewModel);
+            SaveLogCommand = new UpdateLogCommand(this, _homeviewModel, new SwitchViewCommand(_mainviewModel));        
         }
 
         private string _date;
@@ -50,6 +51,33 @@ namespace Swe2_tour_planer.ViewModels
         private string _statusmessage = "";
         private string _statuscolor = "Gray";
 
+        private LogEntry _logBeforeChanges;
+
+
+        public LogEntry LogBeforeChanges
+        {
+            get => this._logBeforeChanges;
+            set
+            {
+                if(value == null)
+                {
+                    return;
+                }
+                this._logBeforeChanges = value;
+                Date = value.Date;
+                Duration = value.Date;
+                Distance = value.Date;
+                Rating = value.Date;
+                Report = value.Date;
+                AverageSpeed = value.Date;
+                EnergyUsed = value.Date;
+                Wheater = value.Date;
+                Traffic = value.Date;
+                Traffic = value.Date;
+                NicenessOfLocals = value.NicenessOfLocals;
+                this.OnPropertyChanged();
+            }
+        }
         public string Date
         {
             get => this._date;

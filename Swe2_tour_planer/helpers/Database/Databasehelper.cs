@@ -132,6 +132,7 @@ namespace Swe2_tour_planer.helpers
                         reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
                     TourList.Add(item);
                 }
+                    reader.Close();
                     conn.Close();
                     return TourList;
             }

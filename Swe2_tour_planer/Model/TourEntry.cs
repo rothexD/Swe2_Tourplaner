@@ -30,6 +30,16 @@ namespace Swe2_tour_planer.Model
             this.Too = too;
             Maneuvers = JsonConvert.DeserializeObject<ObservableCollection<CustomManeuvers>>(Jsonmaneuvers??"");
         }
+        public TourEntry(int tourID, string title, string description, string _imgSource, string from, string too, List<CustomManeuvers> maneuvers)
+        {
+            this.Title = title;
+            this.Description = description;
+            this.ImgSource = _imgSource;
+            this._tourID = tourID;
+            this.From = from;
+            this.Too = too;
+            maneuvers.ForEach(x => Maneuvers.Add(x));
+        }
         public ObservableCollection<CustomManeuvers> Maneuvers
         {
             get => this._maneuvers;

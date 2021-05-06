@@ -17,6 +17,8 @@ namespace Swe2_tour_planer.ViewModels
         private BaseViewModel _selectedViewModel;
         private Dictionary<string,BaseViewModel> ViewList = new Dictionary<string,BaseViewModel>();
         public event PropertyChangedEventHandler PropertyChanged;
+        private UpdateTourViewModel _updateTourViewModel;
+        private UpdateLogViewModel _updateLogViewModel;
         public BaseViewModel SelectedViewModel
         {
             get { return _selectedViewModel; }
@@ -31,6 +33,12 @@ namespace Swe2_tour_planer.ViewModels
             ViewList.Add("ExportView", new ExportViewModel(this,home));
             ViewList.Add("ImportView", new ImportViewModel(this,home));
             ViewList.Add("ReportView", new ReportViewModel(this,home));
+
+            _updateLogViewModel = new UpdateLogViewModel(this, home);
+            ViewList.Add("UpdateLog", _updateLogViewModel);
+
+            _updateTourViewModel = new UpdateTourViewModel(this, home);
+            ViewList.Add("UpdateTour", _updateTourViewModel);
             new Databasehelper(true);
             RequestChangeViewModel("HomeView");
         }
@@ -40,7 +48,14 @@ namespace Swe2_tour_planer.ViewModels
             ViewList.TryGetValue(ViewName, out BaseViewModel value);
             SelectedViewModel = value;
         }
-
+        public void ChangeTourToUpdate(TourEntry tour)
+        {
+            _updateTourViewModel.TourBeforeChanges = tour;
+        }
+        public void ChangeLogToUpdate(LogEntry tour)
+        {
+            _updateLogViewModel.LogBeforeChanges = tour;
+        }
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             Debug.Print($"propertyChanged \"{propertyName}\"");

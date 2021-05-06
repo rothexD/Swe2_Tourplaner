@@ -31,9 +31,10 @@ namespace Swe2_tour_planer.helpers
                             if (reader.HasRows)
                             {
                                 reader.Read();
-                                Console.WriteLine(reader[0].ToString());
+                                string a = reader[0].ToString();
+                                Console.WriteLine();
                                 conn.Close();
-                                return Int32.Parse(reader[0].ToString());
+                                return Int32.Parse(a);
                             }
                             conn.Close();
                             return -1;
@@ -84,6 +85,7 @@ namespace Swe2_tour_planer.helpers
             try
             {
                 string querystring = @$"Update TourEntry set title='{updateEntry.Title}',description='{updateEntry.Description}',imgSource='{updateEntry.ImgSource}',maneuvers='{JsonConvert.SerializeObject(updateEntry.Maneuvers)}' where tourID={updateEntry.TourID}";
+                log.Debug(querystring);
                 var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {

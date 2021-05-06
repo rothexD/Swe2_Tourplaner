@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Swe2_tour_planer.Model
 {
-    class LogsAndTours
+    public class LogsAndTours
     {
         public TourEntry Tour { get; set; }
         public List<LogEntry> Logs { get; set; }

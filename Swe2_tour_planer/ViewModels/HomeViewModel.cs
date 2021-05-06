@@ -9,6 +9,8 @@ using Swe2_tour_planer.helpers;
 using Microsoft.Extensions.Configuration;
 using System.Windows.Media.Imaging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -17,43 +19,77 @@ namespace Swe2_tour_planer.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         private static readonly IConfiguration config = new ConfigurationBuilder().AddJsonFile("Appsettings.json", false, true).Build();
         private readonly MainViewModel _main;
-        public ObservableCollection<TourEntry> Data { get; } = new ObservableCollection<TourEntry>();
+
+        private ObservableCollection<LogsAndTours> _listLogsAndTours { get; set; } = new ObservableCollection<LogsAndTours>();
+        public ObservableCollection<TourEntry> _data { get; set; } = new ObservableCollection<TourEntry>();
         public ICommand RemoveTourCommand { get; }
         public ICommand SearchbarCommand { get; }
         public ICommand RemoveLogCommand { get; }
         public ICommand SwitchView { get; }
+        public ICommand UpdateLogRelay { get; }
+        public ICommand SaveNewLogCommandRelay { get; }
 
         private string _searchbar;
         private TourEntry _currentActiveTour;
-        private ObservableCollection<LogEntry> _currentLogs = new ObservableCollection<LogEntry>();
+
+        public ICommand UpdateTourRelay { get; }
+
+        public ObservableCollection<TourEntry> Data
+        {
+            get
+            {
+                return _data;
+            }
+            set
+            {
+                if (_data != value)
+                {
+                    _data = value;
+
+                    OnPropertyChanged(nameof(Data));
+                }
+            }
+        }
+        public ObservableCollection<LogsAndTours> ListLogsAndTours
+        {
+            get
+            {
+                return _listLogsAndTours;
+            }
+            set
+            {
+                if (_listLogsAndTours != value)
+                {
+                    _listLogsAndTours = value;
+
+                    OnPropertyChanged(nameof(ListLogsAndTours));
+                    OnPropertyChanged(nameof(Data));
+                }
+            }
+        }
         public string ImgSourceWithLocation
         {
             get {
                 if(CurrentActiveTour == null)
                 {
-                    return null;
+                    return "";
                 } 
                 if (CurrentActiveTour.ImgSource == null)
                 {
-                    return null;
+                    return "";
                 }
                 return config["MapQuest:Location"] + CurrentActiveTour.ImgSource;      
                 }
         }
-        public ObservableCollection<LogEntry> CurrentActiveLogs
+        public List<LogEntry> CurrentActiveLogs
         {
             get
             {
-                return _currentLogs;
-            }
-            set
-            {
-                if (_currentLogs != value)
-                {
-                    _currentLogs = value;
-
-                    OnPropertyChanged(nameof(CurrentActiveLogs));
-                }
+               return ListLogsAndTours.ToList().Find(x => { if (x != null) {
+                       var z = CurrentActiveTour == null ? -1 : CurrentActiveTour.TourID;
+                       return x.Tour.TourID == z; } else { return false; } }) != null ? ListLogsAndTours.ToList().Find(x => {
+                           var z = CurrentActiveTour == null ? -1 : CurrentActiveTour.TourID;
+                           return x.Tour.TourID == z; }).Logs : new List<LogEntry>();
             }
         }
 
@@ -96,31 +132,37 @@ namespace Swe2_tour_planer.ViewModels
                 OnPropertyChanged(nameof(CurrentActiveTour.From));
                 OnPropertyChanged(nameof(CurrentActiveTour.Too));
                 OnPropertyChanged(nameof(CurrentActiveTour.Maneuvers));
+                OnPropertyChanged(nameof(CurrentActiveLogs));
             }
         }
-        public async void fillData()
+        public async void getAllToursAndLogs()
+        {
+            var allTours = await Databasehelper.GetListOfTours();
+            List<LogsAndTours> logsAndTours = new List<LogsAndTours>();
+            foreach (var TourFromList in allTours)
+            {
+                var logs = await Databasehelper.GetListOfLogs(TourFromList.TourID);
+                List<LogEntry> logList = new List<LogEntry>();
+                foreach (var log in logs)
+                {
+                    logList.Add(log);
+                }
+                logsAndTours.Add(new LogsAndTours
+                {
+                    Logs = logList,
+                    Tour = TourFromList
+                });
+            }
+            ListLogsAndTours.Clear();
+            logsAndTours.ForEach(x => ListLogsAndTours.Add(x));
+            FillData(ListLogsAndTours.ToList());
+        }
+        private void FillData(List<LogsAndTours> fill)
         {
             Data.Clear();
-            var i = await Databasehelper.GetListOfTours();
-            foreach (var item in i)
-            {
-                Data.Add(item);
-            }
+            fill.ForEach(x => Data.Add(x.Tour));
         }
-        public async void fillLogs()
-        {
-            if(_currentActiveTour == null){
-                return;
-            }
-            CurrentActiveLogs.Clear();
-            var i = await Databasehelper.GetListOfLogs(_currentActiveTour.TourID);
-            foreach (var item in i)
-            {
-                CurrentActiveLogs.Add(item);
-            }
-        }
-
-    public HomeViewModel(MainViewModel main)
+        public HomeViewModel(MainViewModel main)
         {
             Debug.Print("ctor MainViewModel");
             _main = main;
@@ -129,32 +171,76 @@ namespace Swe2_tour_planer.ViewModels
             // this.ExecuteCommand = new RelayCommand(() => Output = $"Hello {Input}!");
 
             this.SearchbarCommand = new SearchBarCommand(this);
-            this.SwitchView = new SwitchViewCommand(_main);
+            this.SwitchView = new SwitchViewCommand(main);
             this.RemoveTourCommand = new RemoveTourCommand(this);
             this.RemoveLogCommand = new RemoveLogCommand(this);
-            fillData();
-
+            this.UpdateTourRelay = new UpdateTourRelay(main, this);
+            this.UpdateLogRelay = new UpdateLogRelay(main, this);
+            this.SaveNewLogCommandRelay = new SaveNewLogCommandRelay(main, this);
+            getAllToursAndLogs();
 
             this.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == "ListTourEntryRefresh")
                 {
-                    fillData();
+                    getAllToursAndLogs();
+                    FillData(ListLogsAndTours.ToList());
                 }
                 if (args.PropertyName == "ListLogRefresh")
                 {
                 }
-                if (args.PropertyName == "CurrentActiveTour")
+                if (args.PropertyName == "CurrentActiveTourChanged")
                 {
-                    fillLogs();
+                    getAllToursAndLogs();
+                    FillData(ListLogsAndTours.ToList());
                 }
                 if (args.PropertyName == "CurrentActiveLogsRefresh")
                 {
-                    fillLogs();
+                    getAllToursAndLogs();
+                    FillData(ListLogsAndTours.ToList());
+                }
+                if (args.PropertyName == "Searchbar")
+                {
+                    SearchFunction();
                 }
             };
         }
+        private void SearchFunction()
+        {
+            if(Searchbar == "")
+            {
+                FillData(ListLogsAndTours.ToList());
+                return;
+            }
+            var list = ListLogsAndTours.Where(x =>
+            {
+                {
+                    if (x.Tour.Title.Contains(Searchbar)) { return true; }
+                    if (x.Tour.From.Contains(Searchbar)) { return true; }
+                    if (x.Tour.Too.Contains(Searchbar)) { return true; }
+                    if (x.Tour.Description.Contains(Searchbar)) { return true; }
+                    bool inLogs = false;
+                    x.Logs.ForEach(y =>
+                    {
+                        if (inLogs) { return; }
+                        if (y.Date.Contains(Searchbar)) { inLogs = true; }
+                        if (y.Duration.Contains(Searchbar)) { inLogs = true; }
+                        if (y.Distance.Contains(Searchbar)) { inLogs = true; }
+                        if (y.Rating.Contains(Searchbar)) { inLogs = true; }
+                        if (y.EnergyUsed.Contains(Searchbar)) { inLogs = true; }
+                        if (y.Wheater.Contains(Searchbar)) { inLogs = true; }
+                        if (y.NicenessOfLocals.Contains(Searchbar)) { inLogs = true; }
+                        if (y.AverageSpeed.Contains(Searchbar)) { inLogs = true; }
+                        if (y.Report.Contains(Searchbar)) { inLogs = true; }
+                        if (y.Traffic.Contains(Searchbar)) { inLogs = true; }
+                    });
+                    if (inLogs) { return true; }
+                    return false;
+                }
+            }).ToList();
 
+            FillData(list);
+        }
   
 
         public virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

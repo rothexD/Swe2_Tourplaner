@@ -14,10 +14,11 @@ using System.Windows.Input;
 
 namespace Swe2_tour_planer.ViewModels
 {
-    public class AddTourViewModel : BaseViewModel, INotifyPropertyChanged
+    public class UpdateTourViewModel : BaseViewModel, INotifyPropertyChanged
     {
         private readonly MainViewModel _mainviewModel;
         public event PropertyChangedEventHandler PropertyChanged;
+        public readonly HomeViewModel _home;
         public ICommand SaveTourCommand { get; }
         public ICommand SwitchView { get; }
 
@@ -28,6 +29,7 @@ namespace Swe2_tour_planer.ViewModels
 
         private string _statusmessage = "";
         private string _statuscolor = "Gray";
+        private TourEntry _tourBeforeChanges = null;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -35,13 +37,32 @@ namespace Swe2_tour_planer.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public AddTourViewModel(MainViewModel main,HomeViewModel home)
+        public UpdateTourViewModel(MainViewModel main, HomeViewModel home)
         {
             _mainviewModel = main;
-            this.SaveTourCommand = new SaveNewTourCommand(this,home);
             this.SwitchView = new SwitchViewCommand(main);
+            _home = home;
+            this.SaveTourCommand = new UpdateTourCommand(this, home, new SwitchViewCommand(main));
         }
-
+        public TourEntry TourBeforeChanges
+        {
+            get
+            {
+                return _tourBeforeChanges;
+            }
+            set
+            {
+                if (_tourBeforeChanges != value)
+                {
+                    _tourBeforeChanges = value ?? null;
+                    InputTitle = value.Title ?? "" ;
+                    InputDescription = value.Description ?? "";
+                    InputFrom = value.From ?? "";
+                    InputTo = value.Too ?? "";
+                    OnPropertyChanged(nameof(TourBeforeChanges));
+                }
+            }
+        }
         public string Statusmessage
         {
             get

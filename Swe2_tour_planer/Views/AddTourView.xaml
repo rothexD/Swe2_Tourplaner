@@ -20,7 +20,7 @@
             <TextBox HorizontalAlignment="Left" Margin="251,118,0,0" Text="{Binding InputDescription,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="413" Height="90" Grid.ColumnSpan="2"/>
             <TextBox HorizontalAlignment="Left" Margin="283,243,0,0" Text="{Binding InputFrom,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="334" Height="22" Grid.ColumnSpan="2"/>
             <TextBox HorizontalAlignment="Left" Text="{Binding InputTo,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="334" Height="22" Margin="284,300,0,0" Grid.ColumnSpan="2"/>
-            <Button HorizontalAlignment="Left"  Margin="478,339,0,0" VerticalAlignment="Top" Command="{Binding SaveNewTourCommand}" FontSize="15" Height="35" Width="74">Add</Button>
+            <Button HorizontalAlignment="Left"  Margin="478,339,0,0" VerticalAlignment="Top" Command="{Binding SaveTourCommand}" FontSize="15" Height="35" Width="74">Save</Button>
             <Button HorizontalAlignment="Left"  Margin="342,339,0,0" VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="HomeView" FontSize="15" Height="35" Width="74">Home</Button>
             <Label  HorizontalAlignment="Left" Margin="432,28,0,0" FontSize="15" VerticalAlignment="Top">title</Label>
             <Label  HorizontalAlignment="Left" Margin="408,88,0,0" FontSize="15" VerticalAlignment="Top">description</Label>

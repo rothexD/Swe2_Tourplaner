@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using static Swe2_tour_planer.helpers.MapQuestJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
+using System.Linq;
 
 namespace Swe2_tour_planer.helpers
 {

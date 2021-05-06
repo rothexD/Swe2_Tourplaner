@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Swe2_tour_planer.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1200">
-    <Grid Margin="5">
+    <Grid Margin="5" Background="#FFE5E5E5" >
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition Height="32"/>
@@ -24,7 +24,7 @@
             <Button  VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="ReportView" Height="30" Margin="153,39,0,0" HorizontalAlignment="Left" Width="87">Create Report</Button>
             <!--<Button  VerticalAlignment="Top" Height="26" Margin="80,0,0,0" Grid.Column="2">Help :c</Button>-->
             <TextBox Grid.Column="1" Margin="7,39,8,0" Text="{Binding Searchbar,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" TextChanged="TextBox_TextChanged" />
-            <Button  Grid.Column="2" Command="{Binding SearchbarCommand}"  VerticalAlignment="Top" Height="30"  Margin="5,39,5,0">Find-Me :)</Button>
+            <!--<Button  Grid.Column="2" Command="{Binding SearchbarCommand}"  VerticalAlignment="Top" Height="30"  Margin="5,39,5,0">Find-Me :)</Button>-->
         </Grid>
         <Grid Grid.Row="1" >
             <Grid.ColumnDefinitions>
@@ -52,7 +52,8 @@
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button>Edit</Button>
+                                            <Button Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Path=DataContext.UpdateTourRelay}" CommandParameter="{Binding TourID}">Edit</Button>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -123,7 +124,8 @@
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button>Edit</Button>
+                                                <Button Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Path=DataContext.UpdateLogRelay}" CommandParameter="{Binding LogID}">Edit</Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -140,7 +142,7 @@
                         </TabItem>
 
                     </TabControl>
-                    <Button  Grid.Column="0"  Command="{Binding SwitchView}" CommandParameter="AddLogEntryView" VerticalAlignment="Top" Height="23" Margin="228,5,0,0" HorizontalAlignment="Left" Width="58">New Log</Button>
+                    <Button  Grid.Column="0"  Command="{Binding SaveNewLogCommandRelay}" CommandParameter="AddLogEntryView" VerticalAlignment="Top" Height="23" Margin="228,5,0,0" HorizontalAlignment="Left" Width="58">New Log</Button>
                 </Grid>
             </Grid>
         </Grid>
