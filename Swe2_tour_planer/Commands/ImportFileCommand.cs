@@ -6,67 +6,79 @@ using System.IO;
 using Swe2_tour_planer.helpers;
 using Swe2_tour_planer.Model;
 using System.Collections.Generic;
+using System;
+using System.IO;
+using System.Windows;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 
 namespace Swe2_tour_planer.Commands
 {
     class ImportFileCommand : ICommand
     {
         private readonly HomeViewModel _homeViewModel;
-        private readonly ImportViewModel _importViewModel;
         public event EventHandler? CanExecuteChanged;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public ImportFileCommand(ImportViewModel importViewModel, HomeViewModel home)
+        public ImportFileCommand(HomeViewModel home)
         {
 
             this._homeViewModel = home;
-            this._importViewModel = importViewModel;
-            _importViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == "ImportPath")
-                {
-                    CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                }
-            };
         }
 
         public bool CanExecute(object? parameter)
         {
-            if (string.IsNullOrWhiteSpace(_importViewModel.ImportPath))
-            {
-                return false;
-            }
             return true;
         }
 
         public async void Execute(object? parameter)
         {
-            if (!File.Exists(_importViewModel.ImportPath))
-            {
-                log.Error($"File does not exist path: {_importViewModel.ImportPath}");
-                return;
-            }
-            if(parameter.ToString() == "Overwrite")
-            {
-                await Databasehelper.RemoveAllLog();
-                await Databasehelper.RemoveAllTour();
-            }
             try
             {
-                List<LogsAndTours> list = ImportExporthelper.ImportFromJsonFile(_importViewModel.ImportPath);
+                string text = "";
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    ValidateNames = false // this will allow paths over 260 characters
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    text = await File.ReadAllTextAsync(openFileDialog.FileName);
+                    log.Debug(openFileDialog.FileName);
+                }
+                else
+                {
+                    return;
+                }
+                if(text == null)
+                {
+                    return;
+                }
+
+                log.Debug(text);
+                List<LogsAndTours> list = JsonConvert.DeserializeObject<List<LogsAndTours>>(text);
                 list.ForEach(async x =>
                 {
-                    var id = await x.Tour.AddTourToDatabase();
-                    x.Logs.ForEach(async y =>
+                    string imageLoc = await mapQuestApiHelper.getMapImage(x.Tour.From, x.Tour.Too);
+                    x.Tour.ImgSource = imageLoc;
+                    log.Debug("try import to database");
+                    int id =0;
+                    try
                     {
-                        await y.AddLogToDatabase(id);
-                    });
+                        id = await x.Tour.AddTourToDatabase();
+                        x.Logs.ForEach(async y =>
+                        {
+                            log.Debug("try log import to database");
+                            await y.AddLogToDatabase(id);
+                        });
+                    }
+                    catch{
+                        log.Debug("try import to database failed exception");
+                    }
+                    _homeViewModel.OnPropertyChanged("ListTourEntryRefresh");
                 });
-                log.Info("import from file success");
-                _homeViewModel.OnPropertyChanged("ListTourEntryRefresh");
-                if (parameter.ToString() == "Overwrite")
-                {
-                    _homeViewModel.CurrentActiveTour = null;
-                }
+                log.Info("import from file success");               
             }         
             catch(Exception e)
             {

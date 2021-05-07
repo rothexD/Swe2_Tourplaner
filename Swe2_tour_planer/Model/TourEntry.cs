@@ -20,6 +20,8 @@ namespace Swe2_tour_planer.Model
         private string _from;
         private string _too;
         private ObservableCollection<CustomManeuvers> _maneuvers = new ObservableCollection<CustomManeuvers>();
+        
+        [JsonConstructor]
         public TourEntry(int tourID, string title, string description, string _imgSource,string from,string too,string Jsonmaneuvers)
         {
             this.Title = title;

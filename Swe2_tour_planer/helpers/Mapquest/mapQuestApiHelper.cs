@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Swe2_tour_planer.helpers
 {
-    class mapQuestApiHelper
+    public class mapQuestApiHelper
     {
         static readonly HttpClient client = new HttpClient();
         private static readonly log4net.ILog log =log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

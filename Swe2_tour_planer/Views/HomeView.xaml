@@ -19,9 +19,10 @@
                 <ColumnDefinition Width="130"/>
             </Grid.ColumnDefinitions>
             <Label   Grid.Column="0" Margin="21,0,65,0" VerticalAlignment="Top" Height="34" FontSize="17">Tour-Planner</Label>
-            <Button  Grid.Column="0"  Command="{Binding SwitchView}" CommandParameter="ImportView" VerticalAlignment="Top" Height="30" Margin="10,39,0,0" HorizontalAlignment="Left" Width="67">Import File</Button>
-            <Button  VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="ExportView" Height="30" Margin="82,39,0,0" HorizontalAlignment="Left" Width="66">Export File</Button>
-            <Button  VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="ReportView" Height="30" Margin="153,39,0,0" HorizontalAlignment="Left" Width="87">Create Report</Button>
+            <Button  Grid.Column="0"  Command="{Binding ImportCommand}" CommandParameter="ImportView" VerticalAlignment="Top" Height="30" Margin="10,39,0,0" HorizontalAlignment="Left" Width="67">Import File</Button>
+            <Button  VerticalAlignment="Top" Command="{Binding ExportCommandCurrent}" CommandParameter="ExportCurrent" Height="30" Margin="159,4,0,0" HorizontalAlignment="Left" Width="85">Export Current</Button>
+            <Button  VerticalAlignment="Top" Command="{Binding ExportCommandAll}" CommandParameter="ExportAll" Height="30" Margin="178,40,0,0" HorizontalAlignment="Left" Width="66" Content="Export All"/>
+            <Button  VerticalAlignment="Top" Command="{Binding ReportCommand}" CommandParameter="ReportCommand" Height="30" Margin="0,40,0,0" HorizontalAlignment="Center" Width="87">Create Report</Button>
             <!--<Button  VerticalAlignment="Top" Height="26" Margin="80,0,0,0" Grid.Column="2">Help :c</Button>-->
             <TextBox Grid.Column="1" Margin="7,39,8,0" Text="{Binding Searchbar,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" TextChanged="TextBox_TextChanged" />
             <!--<Button  Grid.Column="2" Command="{Binding SearchbarCommand}"  VerticalAlignment="Top" Height="30"  Margin="5,39,5,0">Find-Me :)</Button>-->
@@ -103,7 +104,6 @@
                         <TabItem Header="Image">
                             <Grid Background="#FFE5E5E5">
                                 <Image HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="Auto" Grid.ColumnSpan="2" Source="{Binding ImgSourceWithLocation}">
-
                                 </Image>
                             </Grid>
                         </TabItem>
@@ -120,7 +120,7 @@
                                     <DataGridTextColumn Header="Wheater" Binding="{Binding Wheater}" Width="Auto"/>
                                     <DataGridTextColumn Header="Traffic" Binding="{Binding Traffic}" Width="Auto"/>
                                     <DataGridTextColumn  Header="NicenessOfLocals" Binding="{Binding NicenessOfLocals}" Width="Auto"/>
-                                    
+
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -146,6 +146,7 @@
                 </Grid>
             </Grid>
         </Grid>
+
 
     </Grid>
 </UserControl>

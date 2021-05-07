@@ -11,6 +11,9 @@ using System.Windows.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
+using System.IO;
+using System.Windows.Controls;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -28,6 +31,10 @@ namespace Swe2_tour_planer.ViewModels
         public ICommand SwitchView { get; }
         public ICommand UpdateLogRelay { get; }
         public ICommand SaveNewLogCommandRelay { get; }
+        public ICommand ImportCommand { get; }
+        public ICommand ExportCommandAll { get; }
+        public ICommand ExportCommandCurrent { get; }
+        public ICommand ReportCommand { get; }
 
         private string _searchbar;
         private TourEntry _currentActiveTour;
@@ -67,19 +74,18 @@ namespace Swe2_tour_planer.ViewModels
                 }
             }
         }
-        public string ImgSourceWithLocation
+        public byte[] ImgSourceWithLocation
         {
-            get {
-                if(CurrentActiveTour == null)
+            get 
+            {
+                string ImageUri = "default.jpg";
+                if (CurrentActiveTour != null && CurrentActiveTour.ImgSource != null)
                 {
-                    return "";
-                } 
-                if (CurrentActiveTour.ImgSource == null)
-                {
-                    return "";
+                    ImageUri = config["MapQuest:Location"] + CurrentActiveTour.ImgSource;
                 }
-                return config["MapQuest:Location"] + CurrentActiveTour.ImgSource;      
-                }
+                var bytes = File.ReadAllBytes(ImageUri);
+                return bytes;
+            }
         }
         public List<LogEntry> CurrentActiveLogs
         {
@@ -170,13 +176,16 @@ namespace Swe2_tour_planer.ViewModels
             // Alternative: https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/february/patterns-wpf-apps-with-the-model-view-viewmodel-design-pattern#id0090030
             // this.ExecuteCommand = new RelayCommand(() => Output = $"Hello {Input}!");
 
-            this.SearchbarCommand = new SearchBarCommand(this);
             this.SwitchView = new SwitchViewCommand(main);
             this.RemoveTourCommand = new RemoveTourCommand(this);
             this.RemoveLogCommand = new RemoveLogCommand(this);
             this.UpdateTourRelay = new UpdateTourRelay(main, this);
             this.UpdateLogRelay = new UpdateLogRelay(main, this);
             this.SaveNewLogCommandRelay = new SaveNewLogCommandRelay(main, this);
+            this.ImportCommand = new ImportFileCommand(this);
+            this.ExportCommandAll = new ExportFileCommandAll(this);
+            this.ExportCommandCurrent = new ExportFileCommandCurrent(this);
+            this.ReportCommand = new PrintReportCommand(this);
             getAllToursAndLogs();
 
             this.PropertyChanged += (sender, args) =>

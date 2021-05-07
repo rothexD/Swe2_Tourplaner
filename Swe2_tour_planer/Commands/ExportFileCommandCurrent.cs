@@ -7,24 +7,27 @@ using Swe2_tour_planer.helpers;
 using Swe2_tour_planer.Model;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Windows;
+using Microsoft.Win32;
+using System.Linq;
 
 namespace Swe2_tour_planer.Commands
 {
-    class ExportFileCommand : ICommand
+    class ExportFileCommandCurrent : ICommand
     {
         private readonly HomeViewModel _homeViewModel;
-        private readonly ExportViewModel _exportViewModel;
         public event EventHandler? CanExecuteChanged;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ExportFileCommand(ExportViewModel exportViewModel,HomeViewModel homeViewModel)
+        public ExportFileCommandCurrent(HomeViewModel homeViewModel)
         {
 
             this._homeViewModel = homeViewModel;
-            this._exportViewModel = exportViewModel;
-            _exportViewModel.PropertyChanged += (sender, args) =>
+            _homeViewModel.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == "ExportPath")
+                if (args.PropertyName == "CurrentActiveTour")
                 {
                     CanExecuteChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -33,7 +36,7 @@ namespace Swe2_tour_planer.Commands
 
         public bool CanExecute(object parameter)
         {
-            if (string.IsNullOrWhiteSpace(_exportViewModel.ExportPath))
+            if(_homeViewModel.CurrentActiveTour == null)
             {
                 return false;
             }
@@ -44,24 +47,17 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                var allTours = await Databasehelper.GetListOfTours();
-                List<LogsAndTours> logsAndTours = new List<LogsAndTours>();
-                foreach (var TourFromList in allTours)
+
+
+                string output = JsonConvert.SerializeObject(_homeViewModel.ListLogsAndTours.Where(x => x.Tour.TourID == _homeViewModel.CurrentActiveTour.TourID).ToList());
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.DefaultExt = "json";
+                saveFileDialog.Filter = "JavaScript Object Notation | *.json |Text Message | *.txt";
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    var logs = await Databasehelper.GetListOfLogs(TourFromList.TourID);
-                    List<LogEntry> logList = new List<LogEntry>();
-                    foreach (var log in logs)
-                    {
-                        logList.Add(log);
-                    }
-                    logsAndTours.Add(new LogsAndTours
-                    {
-                        Logs = logList,
-                        Tour = TourFromList
-                    });
+                    await File.WriteAllTextAsync(saveFileDialog.FileName, output);
                 }
-                string output = JsonConvert.SerializeObject(logsAndTours);
-                await File.WriteAllTextAsync(_exportViewModel.ExportPath, output);
+
                 log.Info("Export of file success");
             }
             catch(Exception e)

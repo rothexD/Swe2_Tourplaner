@@ -30,7 +30,7 @@ namespace Swe2_tour_planer.ViewModels
             _mainviewModel = main;
             _homeViewModel = home;
             SwitchView = new SwitchViewCommand(main);
-            ImportCommand = new ImportFileCommand(this,home);
+            ImportCommand = new ImportFileCommand(home);
         }
         private string _statusmessage = "";
         private string _statuscolor = "Gray";

@@ -30,7 +30,7 @@ namespace Swe2_tour_planer.ViewModels
             _mainviewModel = main;
             _homeViewModel = home;
             SwitchView = new SwitchViewCommand(main);
-            ReportCommand = new PrintReportCommand(this, home);
+            ReportCommand = new PrintReportCommand(home);
         }
         private string _statusmessage = "";
         private string _statuscolor = "Gray";
