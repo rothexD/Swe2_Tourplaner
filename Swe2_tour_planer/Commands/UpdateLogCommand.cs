@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Swe2_tour_planer.ViewModels;
 using Swe2_tour_planer.Model;
 using Swe2_tour_planer.helpers;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -12,15 +13,17 @@ namespace Swe2_tour_planer.Commands
         private readonly UpdateLogViewModel _UpdateLogViewModel;
         private readonly HomeViewModel _HomeViewModel;
         private readonly SwitchViewCommand _SwitchView;
+        private Services _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public event EventHandler? CanExecuteChanged;
 
-        public UpdateLogCommand(UpdateLogViewModel updateLogViewModel, HomeViewModel home,SwitchViewCommand switchView)
+        public UpdateLogCommand(UpdateLogViewModel updateLogViewModel, HomeViewModel home,SwitchViewCommand switchView,Services service)
         {
 
             this._UpdateLogViewModel = updateLogViewModel;
             this._HomeViewModel = home;
             _SwitchView = switchView;
+            _service = service;
             _UpdateLogViewModel.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == "Date")
@@ -123,7 +126,7 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                var Log = new LogEntry(_UpdateLogViewModel.LogBeforeChanges.LogID, _UpdateLogViewModel.LogBeforeChanges.TourID,
+                var log = new LogEntry(_UpdateLogViewModel.LogBeforeChanges.LogID, _UpdateLogViewModel.LogBeforeChanges.TourID,
                     _UpdateLogViewModel.Date,
                     _UpdateLogViewModel.Duration,
                     _UpdateLogViewModel.Distance,
@@ -136,10 +139,10 @@ namespace Swe2_tour_planer.Commands
                     _UpdateLogViewModel.NicenessOfLocals
                     );
 
-                await Log.UpdateLogInDatabase();
+                await _service.UpdateLog(log);
                 _HomeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
 
-                log.Info("Update Logentry success");
+                UpdateLogCommand.log.Info("Update Logentry success");
                 _SwitchView.Execute("HomeView");
             }
             catch
@@ -148,7 +151,7 @@ namespace Swe2_tour_planer.Commands
 
                 _UpdateLogViewModel.Statuscolor = "red";
                 _UpdateLogViewModel.Statusmessage = "Failed to Update log";
-                log.Info("Update new Logentry failed");
+                UpdateLogCommand.log.Info("Update new Logentry failed");
             }
         }
     }

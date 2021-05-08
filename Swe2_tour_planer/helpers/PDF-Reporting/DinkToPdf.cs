@@ -8,16 +8,16 @@ using Swe2_tour_planer.Model;
 
 namespace Swe2_tour_planer.helpers
 {
-    public class DinkToPdfClass
+    public class DinkToPdfClass : IDinkToPdfClass
     {
-        public static string TourAndLogToHtml(TourEntry Tour, List<LogEntry> Logs)
+        public string TourAndLogToHtml(TourEntry Tour, List<LogEntry> Logs)
         {
             string Html = "";
             Html += TourHtml(Tour);
             Html += LogEntry(Logs);
             return Html;
         }
-        public static string TourHtml(TourEntry Tour)
+        public string TourHtml(TourEntry Tour)
         {
             string TourHtml = "";
             TourHtml += $"<h1>Tour from {Tour.Title}</h1>";
@@ -34,7 +34,7 @@ namespace Swe2_tour_planer.helpers
             }
             return TourHtml;
         }
-        public static string LogEntry(List<LogEntry> Log)
+        public string LogEntry(List<LogEntry> Log)
         {
             string LogHtml = HeadingHtml("2", "TourLogs");
             float Sumduration = 0;
@@ -64,15 +64,15 @@ namespace Swe2_tour_planer.helpers
             LogHtml += "<br>";
             return LogHtml;
         }
-        public static string HeadingHtml(string headingLvl,string a)
+        public  string HeadingHtml(string headingLvl,string a)
         {
             return $"<h{headingLvl }>{a}</h{headingLvl}>";
         }
-        public static string ParagraphHtml(string a)
+        public  string ParagraphHtml(string a)
         {
             return $"<p>{a}</p>";
         }
-        public static void CreatePDFFromHtml(string htmlPage,string @out)
+        public void CreatePDFFromHtml(string htmlPage,string @out)
         {
             // https://github.com/rdvojmoc/DinkToPdf
             // https://github.com/rdvojmoc/DinkToPdf/tree/master/v0.12.4/64%20bit

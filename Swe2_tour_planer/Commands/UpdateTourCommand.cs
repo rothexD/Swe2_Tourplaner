@@ -6,6 +6,7 @@ using Swe2_tour_planer.ViewModels;
 using Swe2_tour_planer.helpers;
 using Newtonsoft.Json;
 using System.IO;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -15,13 +16,15 @@ namespace Swe2_tour_planer.Commands
         public event EventHandler? CanExecuteChanged;
         private readonly HomeViewModel _HomeViewModel;
         private readonly SwitchViewCommand _SwitchView;
+        private readonly Services _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         
-        public UpdateTourCommand(UpdateTourViewModel tourViewModel, HomeViewModel home,SwitchViewCommand switchView)
+        public UpdateTourCommand(UpdateTourViewModel tourViewModel, HomeViewModel home,SwitchViewCommand switchView,Services service)
         {
             _HomeViewModel = home;
             this._UpdateTourViewModel = tourViewModel;
             _SwitchView = switchView;
+            _service = service;
             _UpdateTourViewModel.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == "InputTitle")
@@ -81,15 +84,9 @@ namespace Swe2_tour_planer.Commands
                 {
                     z = -1;
                 }
-                var Route = await mapQuestApiHelper.getRoute(_UpdateTourViewModel.InputFrom, _UpdateTourViewModel.InputTo);
-                var Location = await mapQuestApiHelper.getMapImage(_UpdateTourViewModel.InputFrom, _UpdateTourViewModel.InputTo);
 
-                if (File.Exists(_UpdateTourViewModel.TourBeforeChanges.ImgSource))
-                {
-                    File.Delete(_UpdateTourViewModel.TourBeforeChanges.ImgSource);
-                }
-                var Tour = new TourEntry(_UpdateTourViewModel.TourBeforeChanges.TourID, _UpdateTourViewModel.InputTitle, _UpdateTourViewModel.InputDescription, Location, _UpdateTourViewModel.InputFrom, _UpdateTourViewModel.InputTo,Route);
-                await Tour.UpdateTourInDatabase();
+                var Tour = await _service.UpdateTour(_UpdateTourViewModel.TourBeforeChanges.TourID, _UpdateTourViewModel.InputTitle, _UpdateTourViewModel.InputDescription, _UpdateTourViewModel.InputFrom, _UpdateTourViewModel.InputTo, _UpdateTourViewModel.TourBeforeChanges.ImgSource);
+
                 _HomeViewModel.OnPropertyChanged("ListTourEntryRefresh");
                 if (_UpdateTourViewModel.TourBeforeChanges.TourID == z)
                 {

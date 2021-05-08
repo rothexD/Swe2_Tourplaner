@@ -14,6 +14,7 @@ using System.Linq;
 using System.Windows.Media;
 using System.IO;
 using System.Windows.Controls;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -24,6 +25,7 @@ namespace Swe2_tour_planer.ViewModels
         private readonly MainViewModel _main;
 
         private ObservableCollection<LogsAndTours> _listLogsAndTours { get; set; } = new ObservableCollection<LogsAndTours>();
+        private readonly Services _services;
         public ObservableCollection<TourEntry> _data { get; set; } = new ObservableCollection<TourEntry>();
         public ICommand RemoveTourCommand { get; }
         public ICommand SearchbarCommand { get; }
@@ -83,19 +85,15 @@ namespace Swe2_tour_planer.ViewModels
                 {
                     ImageUri = config["MapQuest:Location"] + CurrentActiveTour.ImgSource;
                 }
-                var bytes = File.ReadAllBytes(ImageUri);
+                var bytes = _services.ImageBytes(ImageUri);
                 return bytes;
             }
         }
-        public List<LogEntry> CurrentActiveLogs
+        public List<LogEntry> CurrentActiveLogs 
         {
             get
             {
-               return ListLogsAndTours.ToList().Find(x => { if (x != null) {
-                       var z = CurrentActiveTour == null ? -1 : CurrentActiveTour.TourID;
-                       return x.Tour.TourID == z; } else { return false; } }) != null ? ListLogsAndTours.ToList().Find(x => {
-                           var z = CurrentActiveTour == null ? -1 : CurrentActiveTour.TourID;
-                           return x.Tour.TourID == z; }).Logs : new List<LogEntry>();
+                return _services.CurrentActiveLogs(ListLogsAndTours.ToList(), CurrentActiveTour);
             }
         }
 
@@ -143,22 +141,7 @@ namespace Swe2_tour_planer.ViewModels
         }
         public async void getAllToursAndLogs()
         {
-            var allTours = await Databasehelper.GetListOfTours();
-            List<LogsAndTours> logsAndTours = new List<LogsAndTours>();
-            foreach (var TourFromList in allTours)
-            {
-                var logs = await Databasehelper.GetListOfLogs(TourFromList.TourID);
-                List<LogEntry> logList = new List<LogEntry>();
-                foreach (var log in logs)
-                {
-                    logList.Add(log);
-                }
-                logsAndTours.Add(new LogsAndTours
-                {
-                    Logs = logList,
-                    Tour = TourFromList
-                });
-            }
+            var logsAndTours = await _services.ListLogsAndTours();
             ListLogsAndTours.Clear();
             logsAndTours.ForEach(x => ListLogsAndTours.Add(x));
             FillData(ListLogsAndTours.ToList());
@@ -168,7 +151,7 @@ namespace Swe2_tour_planer.ViewModels
             Data.Clear();
             fill.ForEach(x => Data.Add(x.Tour));
         }
-        public HomeViewModel(MainViewModel main)
+        public HomeViewModel(MainViewModel main, Services service)
         {
             Debug.Print("ctor MainViewModel");
             _main = main;
@@ -177,15 +160,16 @@ namespace Swe2_tour_planer.ViewModels
             // this.ExecuteCommand = new RelayCommand(() => Output = $"Hello {Input}!");
 
             this.SwitchView = new SwitchViewCommand(main);
-            this.RemoveTourCommand = new RemoveTourCommand(this);
-            this.RemoveLogCommand = new RemoveLogCommand(this);
+            this.RemoveTourCommand = new RemoveTourCommand(this, service);
+            this.RemoveLogCommand = new RemoveLogCommand(this, service);
             this.UpdateTourRelay = new UpdateTourRelay(main, this);
             this.UpdateLogRelay = new UpdateLogRelay(main, this);
             this.SaveNewLogCommandRelay = new SaveNewLogCommandRelay(main, this);
-            this.ImportCommand = new ImportFileCommand(this);
-            this.ExportCommandAll = new ExportFileCommandAll(this);
-            this.ExportCommandCurrent = new ExportFileCommandCurrent(this);
-            this.ReportCommand = new PrintReportCommand(this);
+            this.ImportCommand = new ImportFileCommand(this, service);
+            this.ExportCommandAll = new ExportFileCommandAll(this, service);
+            this.ExportCommandCurrent = new ExportFileCommandCurrent(this, service);
+            this.ReportCommand = new PrintReportCommand(this, service);
+            _services = service;
             getAllToursAndLogs();
 
             this.PropertyChanged += (sender, args) =>
@@ -221,33 +205,7 @@ namespace Swe2_tour_planer.ViewModels
                 FillData(ListLogsAndTours.ToList());
                 return;
             }
-            var list = ListLogsAndTours.Where(x =>
-            {
-                {
-                    if (x.Tour.Title.Contains(Searchbar)) { return true; }
-                    if (x.Tour.From.Contains(Searchbar)) { return true; }
-                    if (x.Tour.Too.Contains(Searchbar)) { return true; }
-                    if (x.Tour.Description.Contains(Searchbar)) { return true; }
-                    bool inLogs = false;
-                    x.Logs.ForEach(y =>
-                    {
-                        if (inLogs) { return; }
-                        if (y.Date.Contains(Searchbar)) { inLogs = true; }
-                        if (y.Duration.Contains(Searchbar)) { inLogs = true; }
-                        if (y.Distance.Contains(Searchbar)) { inLogs = true; }
-                        if (y.Rating.Contains(Searchbar)) { inLogs = true; }
-                        if (y.EnergyUsed.Contains(Searchbar)) { inLogs = true; }
-                        if (y.Wheater.Contains(Searchbar)) { inLogs = true; }
-                        if (y.NicenessOfLocals.Contains(Searchbar)) { inLogs = true; }
-                        if (y.AverageSpeed.Contains(Searchbar)) { inLogs = true; }
-                        if (y.Report.Contains(Searchbar)) { inLogs = true; }
-                        if (y.Traffic.Contains(Searchbar)) { inLogs = true; }
-                    });
-                    if (inLogs) { return true; }
-                    return false;
-                }
-            }).ToList();
-
+            var list = _services.Search(ListLogsAndTours.ToList(), Searchbar);
             FillData(list);
         }
   

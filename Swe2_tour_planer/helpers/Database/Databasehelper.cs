@@ -10,17 +10,34 @@ using Microsoft.Extensions.Configuration;
 
 namespace Swe2_tour_planer.helpers
 {
-    public class Databasehelper
+    public class DatabaseHelper : IDatabaseHelper
     {
         private static readonly IConfiguration config = new ConfigurationBuilder().AddJsonFile("Appsettings.json", false, true).Build();
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public static NpgsqlConnection ConnectObj()
+        public readonly ILogEntryDatabase _logData = new LogEntryDatabase();
+        public readonly ITourEntryDatabase _tourData = new TourEntryDatabase();
+
+        public NpgsqlConnection Create()
         {
             var i = new NpgsqlConnection(config["Database:ConnectionString"]);
             i.Open();
             return i;
         }
-        public Databasehelper(bool ShouldDoTableExistsCheck = false)
+        public ILogEntryDatabase LogData
+        {
+            get
+            {
+                return _logData;
+            }
+        }
+        public ITourEntryDatabase TourData
+        {
+            get
+            {
+                return _tourData;
+            }
+        }
+        public DatabaseHelper(bool ShouldDoTableExistsCheck = false)
         {
             if (ShouldDoTableExistsCheck)
             {
@@ -31,7 +48,7 @@ namespace Swe2_tour_planer.helpers
         {
             try
             {
-                var conn = ConnectObj();
+                var conn = Create();
                 string querystring = @"Create table if not exists TourEntry(
                                         tourID serial primary key,
                                         title varchar,
@@ -69,19 +86,17 @@ namespace Swe2_tour_planer.helpers
             catch(Exception e)
             {
                 log.Error("failure in initialSetupTableExists");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
         
         
-        static public async Task<ObservableCollection<TourEntry>> GetListOfTours()
+        public async Task<ObservableCollection<TourEntry>> GetListOfTours()
         {
             try
             {
                 string querystring = @$"Select * from TourEntry;";
-                var conn = ConnectObj();
+                var conn = Create();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -106,16 +121,14 @@ namespace Swe2_tour_planer.helpers
             catch(Exception e)
             {
                 log.Error("get List of tours failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }        
         }
-        static public async Task<ObservableCollection<LogEntry>> GetListOfLogs(int TourID)
+        public async Task<ObservableCollection<LogEntry>> GetListOfLogs(int TourID)
         {
             try { 
             string querystring = @$"Select * from LogEntry where tourID_fk = {TourID}";
-            var conn = ConnectObj();
+            var conn = Create();
             using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
             {
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -140,18 +153,16 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("get List of Logs failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
 
-        static public async Task<int> RemoveTour(int ID)
+        public async Task<int> RemoveTour(int ID)
         {
             try
             {
                 string querystring = @$"Delete from TourEntry where tourID = {ID} ";
-                var conn = Databasehelper.ConnectObj();
+                var conn = Create();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -162,18 +173,16 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Removing of Tour failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
 
-        static public async Task<int> RemoveLog(int ID)
+        public async Task<int> RemoveLog(int ID)
         {
             try
             {
                 string querystring = @$"Delete from LogEntry where logID = {ID} ";
-                var conn = Databasehelper.ConnectObj();
+                var conn = Create();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -185,17 +194,15 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Remove of Log failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
-        static public async Task<int> RemoveAllTour()
+        public async Task<int> RemoveAllTour()
         {
             try
             {
                 string querystring = @$"Delete from TourEntry";
-                var conn = Databasehelper.ConnectObj();
+                var conn = Create();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -206,18 +213,16 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Removing of All Tour failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
 
-        static public async Task<int> RemoveAllLog()
+        public async Task<int> RemoveAllLog()
         {
             try
             {
                 string querystring = @$"Delete from LogEntry";
-                var conn = Databasehelper.ConnectObj();
+                var conn = Create();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -229,9 +234,7 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Remove of All Log failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
     }

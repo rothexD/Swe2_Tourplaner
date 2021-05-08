@@ -11,6 +11,7 @@ using System.IO;
 using System.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -18,11 +19,13 @@ namespace Swe2_tour_planer.Commands
     {
         private readonly HomeViewModel _homeViewModel;
         public event EventHandler? CanExecuteChanged;
+        private Services _services;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public ImportFileCommand(HomeViewModel home)
+        public ImportFileCommand(HomeViewModel home,Services services)
         {
 
             this._homeViewModel = home;
+            this._services = services;
         }
 
         public bool CanExecute(object? parameter)
@@ -34,50 +37,17 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                string text = "";
                 OpenFileDialog openFileDialog = new OpenFileDialog
                 {
                     CheckFileExists = true,
                     CheckPathExists = true,
                     ValidateNames = false // this will allow paths over 260 characters
                 };
-
                 if (openFileDialog.ShowDialog() == true)
                 {
-                    text = await File.ReadAllTextAsync(openFileDialog.FileName);
-                    log.Debug(openFileDialog.FileName);
+                     await _services.ImportFile(openFileDialog.FileName);
                 }
-                else
-                {
-                    return;
-                }
-                if(text == null)
-                {
-                    return;
-                }
-
-                log.Debug(text);
-                List<LogsAndTours> list = JsonConvert.DeserializeObject<List<LogsAndTours>>(text);
-                list.ForEach(async x =>
-                {
-                    string imageLoc = await mapQuestApiHelper.getMapImage(x.Tour.From, x.Tour.Too);
-                    x.Tour.ImgSource = imageLoc;
-                    log.Debug("try import to database");
-                    int id =0;
-                    try
-                    {
-                        id = await x.Tour.AddTourToDatabase();
-                        x.Logs.ForEach(async y =>
-                        {
-                            log.Debug("try log import to database");
-                            await y.AddLogToDatabase(id);
-                        });
-                    }
-                    catch{
-                        log.Debug("try import to database failed exception");
-                    }
-                    _homeViewModel.OnPropertyChanged("ListTourEntryRefresh");
-                });
+                _homeViewModel.OnPropertyChanged("ListTourEntryRefresh");
                 log.Info("import from file success");               
             }         
             catch(Exception e)

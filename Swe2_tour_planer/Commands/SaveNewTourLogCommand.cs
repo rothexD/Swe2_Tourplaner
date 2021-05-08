@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Swe2_tour_planer.ViewModels;
 using Swe2_tour_planer.Model;
 using Swe2_tour_planer.helpers;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -11,14 +12,16 @@ namespace Swe2_tour_planer.Commands
     {
         private readonly AddLogEntryViewModel _AddlogViewModel;
         private readonly HomeViewModel _HomeViewModel;
+        private Services _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public event EventHandler? CanExecuteChanged;
 
-        public SaveNewTourLogCommand(AddLogEntryViewModel AddLogViewModel,HomeViewModel home)
+        public SaveNewTourLogCommand(AddLogEntryViewModel AddLogViewModel,HomeViewModel home,Services service)
         {
 
             this._AddlogViewModel = AddLogViewModel;
             this._HomeViewModel = home;
+            _service = service;
             _AddlogViewModel.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == "Date")
@@ -141,7 +144,7 @@ namespace Swe2_tour_planer.Commands
                     _AddlogViewModel.NicenessOfLocals
                     );
 
-                await Log.AddLogToDatabase();
+                await _service.AddNewLog(Log);
 
 
 
@@ -159,6 +162,7 @@ namespace Swe2_tour_planer.Commands
                 _AddlogViewModel.NicenessOfLocals = "";
                 log.Info("Adding new Logentry success");
                 _HomeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
+                _HomeViewModel.SwitchView.Execute("homeView");
             }
             catch
             {

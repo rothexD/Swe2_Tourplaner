@@ -12,14 +12,14 @@ using System.Linq;
 
 namespace Swe2_tour_planer.helpers
 {
-    public class mapQuestApiHelper
+    public class MapQuestApiHelper : IMapQuestApiHelper
     {
         static readonly HttpClient client = new HttpClient();
         private static readonly log4net.ILog log =log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly IConfiguration config = new ConfigurationBuilder().AddJsonFile("Appsettings.json", false, true).Build();
 
         //https://www.mapquestapi.com/staticmap/v5/map?start=New+York,NY&end=Washington,DC&size=600,400@2x&key=KEY
-        public static async Task<string> getMapImage(string from, string too, string x_pixel = "500", string y_pixel = "500")
+        public async Task<string> getMapImage(string from, string too, string x_pixel = "500", string y_pixel = "500")
         {
             try
             {
@@ -44,12 +44,10 @@ namespace Swe2_tour_planer.helpers
             catch(Exception e)
             {
                 log.Error("could not get image to route");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }     
         }
-        public static async Task<List<CustomManeuvers>> getRoute(string from, string too)
+        public  async Task<List<CustomManeuvers>> getRoute(string from, string too)
         {
             try
             {
@@ -64,6 +62,8 @@ namespace Swe2_tour_planer.helpers
                 if (Routedescription.Info.Statuscode != 0)
                 {
                     log.Error($"route not possible statuscode of mapquest api was: {Routedescription.Info.Statuscode.ToString()} with message: \"{Routedescription.Info.Messages}\"");
+                    log.Debug(from);
+                    log.Debug(too);
                     throw new Exception($"route not possible statuscode of mapquest api was: {Routedescription.Info.Statuscode.ToString()} with message: \"{Routedescription.Info.Messages}\"");
                 }
 
@@ -87,9 +87,7 @@ namespace Swe2_tour_planer.helpers
             catch(Exception e)
             {
                 log.Error("Exception occured in get Route\n");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
     }

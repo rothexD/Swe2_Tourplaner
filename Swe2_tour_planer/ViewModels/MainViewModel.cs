@@ -9,6 +9,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Swe2_tour_planer.helpers;
+using Swe2_tour_planer.Logik;
+using System;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -22,31 +24,42 @@ namespace Swe2_tour_planer.ViewModels
         public BaseViewModel SelectedViewModel
         {
             get { return _selectedViewModel; }
-            set { _selectedViewModel = value; OnPropertyChanged(nameof(SelectedViewModel)); }
+            private set { _selectedViewModel = value; OnPropertyChanged(nameof(SelectedViewModel)); }
         }
         public MainViewModel()
         {
-            var home = new HomeViewModel(this);
+            var service = new Services(new DatabaseHelper(),new MapQuestApiHelper(),new ImportExporthelper(),new DinkToPdfClass());
+            var home = new HomeViewModel(this, service);
+           
             ViewList.Add("HomeView", home);
-            ViewList.Add("AddLogEntryView", new AddLogEntryViewModel(this, home));
-            ViewList.Add("AddTourView", new AddTourViewModel(this,home));
-            ViewList.Add("ExportView", new ExportViewModel(this,home));
-            ViewList.Add("ImportView", new ImportViewModel(this,home));
-            ViewList.Add("ReportView", new ReportViewModel(this,home));
+            ViewList.Add("AddLogEntryView", new AddLogEntryViewModel(this, home, service));
+            ViewList.Add("AddTourView", new AddTourViewModel(this,home, service));
+            ViewList.Add("ExportView", new ExportViewModel(this,home, service));
+            ViewList.Add("ImportView", new ImportViewModel(this,home, service));
+            ViewList.Add("ReportView", new ReportViewModel(this,home, service));
 
-            _updateLogViewModel = new UpdateLogViewModel(this, home);
+            _updateLogViewModel = new UpdateLogViewModel(this, home, service);
             ViewList.Add("UpdateLog", _updateLogViewModel);
 
-            _updateTourViewModel = new UpdateTourViewModel(this, home);
+            _updateTourViewModel = new UpdateTourViewModel(this, home, service);
             ViewList.Add("UpdateTour", _updateTourViewModel);
-            new Databasehelper(true);
+            new DatabaseHelper(true);
             RequestChangeViewModel("HomeView");
         }
-
         public void RequestChangeViewModel(string ViewName)
         {
-            ViewList.TryGetValue(ViewName, out BaseViewModel value);
-            SelectedViewModel = value;
+            try
+            {
+                ViewList.TryGetValue(ViewName, out BaseViewModel value);
+                if(value == null){
+                    return;
+                }
+                SelectedViewModel = value;
+            }
+            catch(Exception e)
+            {
+
+            }
         }
         public void ChangeTourToUpdate(TourEntry tour)
         {

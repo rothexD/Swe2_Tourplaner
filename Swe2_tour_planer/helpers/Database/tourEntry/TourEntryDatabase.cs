@@ -10,15 +10,14 @@ using Newtonsoft.Json;
 
 namespace Swe2_tour_planer.helpers
 {
-    public static class tourEntryDbExtentions
+    public class TourEntryDatabase : ITourEntryDatabase
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        static public async Task<int> AddTourToDatabase(this TourEntry newEntry)
+         public async Task<int> AddTourToDatabase(TourEntry newEntry, NpgsqlConnection conn)
         {
             try
             {
                 string querystring = @$"Insert into TourEntry(title,description,imgSource,fromL,too,maneuvers) values ('{newEntry.Title}','{newEntry.Description}','{newEntry.ImgSource}','{newEntry.From}','{newEntry.Too}','{JsonConvert.SerializeObject(newEntry.Maneuvers)}');";
-                var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -41,9 +40,8 @@ namespace Swe2_tour_planer.helpers
                         }
                         catch(Exception e)
                         {
-                            log.Error(e.Message);
                             log.Error("lastval failed");
-                            throw new Exception();
+                            throw e;
                         }
                        
                     }
@@ -52,18 +50,14 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Adding of new Tour Failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                log.Info(newEntry);
-                throw new Exception();
+                throw e;
             }
         }
-        static public async Task<int> RemoveTourFromDatabase(this TourEntry newEntry)
+        public async Task<int> RemoveTourFromDatabase(TourEntry newEntry, NpgsqlConnection conn)
         {
             try
             {
                 string querystring = @$"Delete from TourEntry where tourID = {newEntry.TourID} ";
-                var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -75,18 +69,15 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Removing of Tour failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
-        static public async Task<int> UpdateTourInDatabase(this TourEntry updateEntry)
+        public async Task<int> UpdateTourInDatabase(TourEntry updateEntry, NpgsqlConnection conn)
         {
             try
             {
                 string querystring = @$"Update TourEntry set title='{updateEntry.Title}',description='{updateEntry.Description}',imgSource='{updateEntry.ImgSource}',maneuvers='{JsonConvert.SerializeObject(updateEntry.Maneuvers)}' where tourID={updateEntry.TourID}";
                 log.Debug(querystring);
-                var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -97,9 +88,7 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Update of Tour failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                throw e;
             }
         }
 

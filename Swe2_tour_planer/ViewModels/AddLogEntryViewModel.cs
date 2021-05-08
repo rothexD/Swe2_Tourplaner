@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Swe2_tour_planer.Logik;
 
 
 namespace Swe2_tour_planer.ViewModels
@@ -28,11 +29,11 @@ namespace Swe2_tour_planer.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public AddLogEntryViewModel(MainViewModel main, HomeViewModel home)
+        public AddLogEntryViewModel(MainViewModel main, HomeViewModel home,Services service)
         {
             _mainviewModel = main;
             _homeviewModel = home;
-            SaveLogCommand = new SaveNewTourLogCommand(this, _homeviewModel);
+            SaveLogCommand = new SaveNewTourLogCommand(this, _homeviewModel, service);
             SwitchView = new SwitchViewCommand(_mainviewModel);
         }
 

@@ -10,7 +10,8 @@ namespace Swe2_tour_planer.helpers
         static public string DistanceInKm(this MapQuestJson.CustomManeuvers single)
         {
             float inMiles = float.Parse(single.DistanceInMiles);
-            return (inMiles * 1.609344).ToString();
+            float withMath = (inMiles * 1.609344f);
+            return withMath.ToString("0.00"); ;
         }
     }
 }

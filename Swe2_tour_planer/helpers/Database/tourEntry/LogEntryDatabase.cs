@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace Swe2_tour_planer.helpers
 {
-    public static class logEntryExtentions
+    public  class LogEntryDatabase : ILogEntryDatabase
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        static public async Task<int> AddLogToDatabase(this LogEntry newEntry)
+        public async Task<int> AddLogToDatabase(LogEntry newEntry,NpgsqlConnection conn)
         {
             try
             {
@@ -29,7 +29,6 @@ namespace Swe2_tour_planer.helpers
                                     '{newEntry.Traffic}',
                                     '{newEntry.NicenessOfLocals}'
                                     );";
-                var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -39,13 +38,11 @@ namespace Swe2_tour_planer.helpers
             }
             catch (Exception e)
             {
-                log.Error("inserting new Log into db failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                log.Error("Database inserting new Log into db failed");
+                throw e;
             }
         }
-        static public async Task<int> AddLogToDatabase(this LogEntry newEntry,int id)
+        public async Task<int> AddLogToDatabase(LogEntry newEntry,int id, NpgsqlConnection conn)
         {
             try
             {
@@ -62,7 +59,6 @@ namespace Swe2_tour_planer.helpers
                                     '{newEntry.Traffic}',
                                     '{newEntry.NicenessOfLocals}'
                                     );";
-                var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -72,19 +68,16 @@ namespace Swe2_tour_planer.helpers
             }
             catch (Exception e)
             {
-                log.Error("inserting new Log into db failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                log.Error("Database inserting new Log into db failed");
+                throw e;
             }
         }
 
-        static public async Task<int> RemoveLogFromDatabase(this LogEntry newEntry)
+        public async Task<int> RemoveLogFromDatabase(LogEntry newEntry, NpgsqlConnection conn)
         {
             try
             {
                 string querystring = @$"Delete from LogEntry where logID = {newEntry.LogID} ";
-                var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -95,14 +88,12 @@ namespace Swe2_tour_planer.helpers
             }
             catch (Exception e)
             {
-                log.Error("Remove of Log failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                log.Error("Database Remove of Log failed");
+                throw e;
             }
         }
 
-        static public async Task<int> UpdateLogInDatabase(this LogEntry updateEntry)
+        public async Task<int> UpdateLogInDatabase(LogEntry updateEntry, NpgsqlConnection conn)
         {
             try
             {
@@ -117,7 +108,6 @@ namespace Swe2_tour_planer.helpers
                                 wheater='{updateEntry.Wheater}',
                                 traffic='{updateEntry.Traffic}',
                                 nicenessoflocals='{updateEntry.NicenessOfLocals}' where LogID = {updateEntry.LogID}";
-                var conn = Databasehelper.ConnectObj();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -127,10 +117,8 @@ namespace Swe2_tour_planer.helpers
             }
             catch (Exception e)
             {
-                log.Error("Update of Logs failed");
-                log.Debug(e.StackTrace);
-                log.Debug(e.Message);
-                throw new Exception();
+                log.Error("Database Update of Logs failed");
+                throw e;
             }
         }
     }

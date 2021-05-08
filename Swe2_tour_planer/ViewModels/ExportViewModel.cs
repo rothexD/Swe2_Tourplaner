@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -25,12 +26,12 @@ namespace Swe2_tour_planer.ViewModels
             Debug.Print($"propertyChanged \"{propertyName}\"");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public ExportViewModel(MainViewModel main, HomeViewModel home)
+        public ExportViewModel(MainViewModel main, HomeViewModel home,Services service)
         {
             _mainviewModel = main;
             _homeViewModel = home;
             SwitchView = new SwitchViewCommand(main);
-            ExportCommand = new ExportFileCommandAll(home);
+            ExportCommand = new ExportFileCommandAll(home, service);
         }
         private string _statusmessage = "";
         private string _statuscolor = "Gray";

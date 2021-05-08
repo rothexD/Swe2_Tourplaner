@@ -5,6 +5,7 @@ using Swe2_tour_planer.Model;
 using Swe2_tour_planer.ViewModels;
 using Swe2_tour_planer.helpers;
 using Newtonsoft.Json;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -13,12 +14,14 @@ namespace Swe2_tour_planer.Commands
         private readonly AddTourViewModel _addTourViewModel;
         public event EventHandler? CanExecuteChanged;
         private readonly HomeViewModel _HomeViewModel;
+        private Services _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public SaveNewTourCommand(AddTourViewModel tourViewModel,HomeViewModel home)
+        public SaveNewTourCommand(AddTourViewModel tourViewModel,HomeViewModel home,Services service)
         {
             _HomeViewModel = home;
             this._addTourViewModel = tourViewModel;
+            this._service = service;
             _addTourViewModel.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == "InputTitle")
@@ -67,11 +70,7 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                var Route = await mapQuestApiHelper.getRoute(_addTourViewModel.InputFrom, _addTourViewModel.InputTo);
-                var Location = await mapQuestApiHelper.getMapImage(_addTourViewModel.InputFrom, _addTourViewModel.InputTo);
-
-                var Tour = new TourEntry(0, _addTourViewModel.InputTitle, _addTourViewModel.InputDescription, Location, _addTourViewModel.InputFrom, _addTourViewModel.InputTo, JsonConvert.SerializeObject(Route));
-                var a = await Tour.AddTourToDatabase();
+                var a = await _service.AddNewTour(_addTourViewModel.InputTitle, _addTourViewModel.InputDescription, _addTourViewModel.InputFrom, _addTourViewModel.InputTo);
                 log.Info($"Added new Tour by Command success TourID: {a.ToString()}");
                 _addTourViewModel.Statuscolor = "Green";
                 _addTourViewModel.Statusmessage = "Added Last Tour successfully";
@@ -80,6 +79,7 @@ namespace Swe2_tour_planer.Commands
                 _addTourViewModel.InputFrom = "";
                 _addTourViewModel.InputTo = "";
                 _HomeViewModel.OnPropertyChanged("ListTourEntryRefresh");
+                _HomeViewModel.SwitchView.Execute("homeView");
             }
             catch(Exception e)
             {

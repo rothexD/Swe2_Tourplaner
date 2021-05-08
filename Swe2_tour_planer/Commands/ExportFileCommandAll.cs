@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows;
 using Microsoft.Win32;
 using System.Linq;
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -19,12 +20,14 @@ namespace Swe2_tour_planer.Commands
     {
         private readonly HomeViewModel _homeViewModel;
         public event EventHandler? CanExecuteChanged;
+        private Services _services;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ExportFileCommandAll(HomeViewModel homeViewModel)
+        public ExportFileCommandAll(HomeViewModel homeViewModel,Services services)
         {
 
             this._homeViewModel = homeViewModel;
+            this._services = services;
         }
 
         public bool CanExecute(object parameter)
@@ -36,15 +39,14 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                string output = JsonConvert.SerializeObject(_homeViewModel.ListLogsAndTours.ToList());
+                
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.DefaultExt = "json";
                 saveFileDialog.Filter = "JavaScript Object Notation | *.json |Text Message | *.txt";
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    await File.WriteAllTextAsync(saveFileDialog.FileName, output);
-                }
-                  
+                    await this._services.ExportFile(saveFileDialog.FileName, _homeViewModel.ListLogsAndTours.ToList());
+                }                
                 log.Info("Export of file success");
             }
             catch(Exception e)

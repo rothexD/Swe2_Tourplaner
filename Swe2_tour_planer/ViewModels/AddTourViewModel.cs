@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-
+using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -35,10 +35,10 @@ namespace Swe2_tour_planer.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public AddTourViewModel(MainViewModel main,HomeViewModel home)
+        public AddTourViewModel(MainViewModel main,HomeViewModel home, Services service)
         {
             _mainviewModel = main;
-            this.SaveTourCommand = new SaveNewTourCommand(this,home);
+            this.SaveTourCommand = new SaveNewTourCommand(this,home, service);
             this.SwitchView = new SwitchViewCommand(main);
         }
 
