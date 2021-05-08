@@ -353,3 +353,4 @@ MigrationBackup/
 Appsettings.json
 
 Swe2_tour_planer/Appsettings.json
+Swe2_tour_planer/bin/Debug/net5.0-windows/Appsettings.json
