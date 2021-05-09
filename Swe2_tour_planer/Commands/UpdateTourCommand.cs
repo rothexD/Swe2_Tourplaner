@@ -84,7 +84,7 @@ namespace Swe2_tour_planer.Commands
                 {
                     z = -1;
                 }
-
+                log.Debug(_UpdateTourViewModel.InputFrom + " " + _UpdateTourViewModel.InputTo);
                 var Tour = await _service.UpdateTour(_UpdateTourViewModel.TourBeforeChanges.TourID, _UpdateTourViewModel.InputTitle, _UpdateTourViewModel.InputDescription, _UpdateTourViewModel.InputFrom, _UpdateTourViewModel.InputTo, _UpdateTourViewModel.TourBeforeChanges.ImgSource);
 
                 _HomeViewModel.OnPropertyChanged("ListTourEntryRefresh");

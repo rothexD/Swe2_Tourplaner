@@ -5,6 +5,7 @@ using Swe2_tour_planer.ViewModels;
 using Swe2_tour_planer.Model;
 using Swe2_tour_planer.helpers;
 using Swe2_tour_planer.Logik;
+using Swe2_tour_planer.Validation;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -16,7 +17,7 @@ namespace Swe2_tour_planer.Commands
         private Services _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public event EventHandler? CanExecuteChanged;
-
+        private readonly AlphaNumvericValidation validator = new AlphaNumvericValidation();
         public UpdateLogCommand(UpdateLogViewModel updateLogViewModel, HomeViewModel home,SwitchViewCommand switchView,Services service)
         {
 
@@ -75,15 +76,15 @@ namespace Swe2_tour_planer.Commands
 
         public bool CanExecute(object? parameter)
         {
-            if (string.IsNullOrWhiteSpace(_UpdateLogViewModel.Date))
+            if (string.IsNullOrWhiteSpace(_UpdateLogViewModel.Date.ToString()))
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_UpdateLogViewModel.Duration))
+            if (!validator.Validate(_UpdateLogViewModel.Duration, null).IsValid)
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_UpdateLogViewModel.Distance))
+            if (!validator.Validate(_UpdateLogViewModel.Distance, null).IsValid)
             {
                 return false;
             }
@@ -95,11 +96,11 @@ namespace Swe2_tour_planer.Commands
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_UpdateLogViewModel.AverageSpeed))
+            if (!validator.Validate(_UpdateLogViewModel.AverageSpeed, null).IsValid)
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_UpdateLogViewModel.EnergyUsed))
+            if (!validator.Validate(_UpdateLogViewModel.EnergyUsed, null).IsValid)
             {
                 return false;
             }
@@ -126,6 +127,7 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
+                UpdateLogCommand.log.Debug(_UpdateLogViewModel.Date);
                 var log = new LogEntry(_UpdateLogViewModel.LogBeforeChanges.LogID, _UpdateLogViewModel.LogBeforeChanges.TourID,
                     _UpdateLogViewModel.Date,
                     _UpdateLogViewModel.Duration,
@@ -140,6 +142,7 @@ namespace Swe2_tour_planer.Commands
                     );
 
                 await _service.UpdateLog(log);
+                _HomeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
                 _HomeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
 
                 UpdateLogCommand.log.Info("Update Logentry success");

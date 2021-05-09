@@ -37,7 +37,7 @@ namespace Swe2_tour_planer.ViewModels
             SaveLogCommand = new UpdateLogCommand(this, _homeviewModel, new SwitchViewCommand(_mainviewModel),service);        
         }
 
-        private string _date;
+        private DateTime _date;
         private string _duration;
         private string _distance;
         private string _rating;
@@ -65,20 +65,20 @@ namespace Swe2_tour_planer.ViewModels
                 }
                 this._logBeforeChanges = value;
                 Date = value.Date;
-                Duration = value.Date;
-                Distance = value.Date;
-                Rating = value.Date;
-                Report = value.Date;
-                AverageSpeed = value.Date;
-                EnergyUsed = value.Date;
-                Wheater = value.Date;
-                Traffic = value.Date;
-                Traffic = value.Date;
+                Duration = value.Duration;
+                Distance = value.Distance;
+                Rating = value.Rating;
+                Report = value.Report;
+                AverageSpeed = value.AverageSpeed;
+                EnergyUsed = value.EnergyUsed;
+                Wheater = value.Wheater;
+                Traffic = value.Traffic;
+                Traffic = value.Traffic;
                 NicenessOfLocals = value.NicenessOfLocals;
                 this.OnPropertyChanged();
             }
         }
-        public string Date
+        public DateTime Date
         {
             get => this._date;
             set

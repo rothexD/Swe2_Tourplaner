@@ -36,7 +36,9 @@ namespace Swe2_tour_planer.Commands
             {
                 await _service.RemoveLog(Int32.Parse(parameter.ToString()));
                 log.Info($"Removed Log with Id:{Int32.Parse(parameter.ToString())} succesfully");
+                _homeViewModel.OnPropertyChanged("ListTourEntryRefresh");
                 _homeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
+                
             }
             catch
             {

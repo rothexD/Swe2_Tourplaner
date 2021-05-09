@@ -25,7 +25,7 @@ namespace Unit_Tests
         static private TourEntry tour2 = new TourEntry(1, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]");
         static private TourEntry tour3 = new TourEntry(2, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]");
         static private TourEntry tour8 = new TourEntry(7, "bla", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]");
-        static private LogEntry log = new LogEntry(0, 0, "abc", "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
+        static private LogEntry log = new LogEntry(0, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
         static private LogsAndTours logsAndTour1 = new LogsAndTours()
         {
             Tour = tour,
@@ -60,11 +60,11 @@ namespace Unit_Tests
             TourEntry tour5 = new TourEntry(4, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]");
             TourEntry tour6 = new TourEntry(5, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]");
             TourEntry tour7 = new TourEntry(6, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]");
-            LogEntry log2 = new LogEntry(1, 0, "abc", "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
-            LogEntry log3 = new LogEntry(2, 0, "abc", "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
-            LogEntry log4 = new LogEntry(3, 0, "abc", "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
-            LogEntry log5 = new LogEntry(4, 0, "abc", "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
-            LogEntry log6 = new LogEntry(5, 0, "abc", "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
+            LogEntry log2 = new LogEntry(1, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
+            LogEntry log3 = new LogEntry(2, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
+            LogEntry log4 = new LogEntry(3, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
+            LogEntry log5 = new LogEntry(4, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
+            LogEntry log6 = new LogEntry(5, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
             listLogsAndTours.Add(new LogsAndTours()
             {
                 Tour = tour5,
@@ -268,7 +268,7 @@ namespace Unit_Tests
 
             Assert.AreEqual(0, _tempstorageLog.LogID);
             Assert.AreEqual(0, _tempstorageLog.TourID);
-            Assert.AreEqual("abc", _tempstorageLog.Date);
+
             Assert.AreEqual("abc", _tempstorageLog.Duration);
             Assert.AreEqual("5", _tempstorageLog.Distance);
             Assert.AreEqual("a", _tempstorageLog.Rating);
@@ -287,7 +287,6 @@ namespace Unit_Tests
 
             Assert.AreEqual(0, _tempstorageLog.LogID);
             Assert.AreEqual(0, _tempstorageLog.TourID);
-            Assert.AreEqual("abc", _tempstorageLog.Date);
             Assert.AreEqual("abc", _tempstorageLog.Duration);
             Assert.AreEqual("5", _tempstorageLog.Distance);
             Assert.AreEqual("a", _tempstorageLog.Rating);

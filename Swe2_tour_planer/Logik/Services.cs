@@ -84,19 +84,19 @@ namespace Swe2_tour_planer.Logik
         }
         public async Task<bool> ImportFile(string path)
         {
-            //try
-            // {
+            try
+            {
                 string text = _importerExporter.ImportFromJsonFile(path);
                 log.Debug(text);
                 List<LogsAndTours> list = JsonConvert.DeserializeObject<List<LogsAndTours>>(text);
                 await ForeachLogAndToursToDatabase(list);
                 return true;
-            /*}
+            }
             catch(Exception e)
             {
                 log.Error(e);
                 throw new Exception();
-            }*/
+            }
         }
 
         public async Task<bool> ExportFile(string path,List<LogsAndTours> listLogsAndTours)
@@ -137,6 +137,7 @@ namespace Swe2_tour_planer.Logik
         {
             try
             {
+                log.Debug(from + " " + too);
                 var route = await _mapQuest.getRoute(from, too);
                 var location = await _mapQuest.getMapImage(from, too);
 
@@ -182,8 +183,8 @@ namespace Swe2_tour_planer.Logik
         }
         public async Task<TourEntry> UpdateTour(int id, string title,string description,string from,string too, string imagePathBefore)
         {
-            //try
-           // {
+            try
+            {
                 var Route = await _mapQuest.getRoute(from, too);
                 var Location = await _mapQuest.getMapImage(from, too);
 
@@ -194,14 +195,14 @@ namespace Swe2_tour_planer.Logik
                 var Tour = new TourEntry(id, title, description, Location, from, too, Route);
                 await _database.TourData.UpdateTourInDatabase(Tour, _database.Create());
                 return Tour;
-           /* }
+           }
             catch (Exception e)
             {
                 log.Error("failed TO UpdateTour");
                 log.Debug(e.Message);
                 log.Debug(e.StackTrace);
                 throw new Exception();
-            }*/
+            }
         }
         public List<LogsAndTours> Search(List<LogsAndTours> list,string searchbar)
         {
@@ -218,7 +219,7 @@ namespace Swe2_tour_planer.Logik
                     x.Logs.ForEach(y =>
                     {
                         if (inLogs) { return; }
-                        if (y.Date.Contains(searchbar)) { inLogs = true; }
+                        if (y.Date.ToString().Contains(searchbar)){ inLogs = true; }
                         if (y.Duration.Contains(searchbar)) { inLogs = true; }
                         if (y.Distance.Contains(searchbar)) { inLogs = true; }
                         if (y.Rating.Contains(searchbar)) { inLogs = true; }

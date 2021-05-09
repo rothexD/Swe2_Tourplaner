@@ -17,9 +17,16 @@ namespace Swe2_tour_planer.helpers
         {
             try
             {
-                string querystring = @$"Insert into TourEntry(title,description,imgSource,fromL,too,maneuvers) values ('{newEntry.Title}','{newEntry.Description}','{newEntry.ImgSource}','{newEntry.From}','{newEntry.Too}','{JsonConvert.SerializeObject(newEntry.Maneuvers)}');";
+                string querystring = @$"Insert into TourEntry(title,description,imgSource,fromL,too,maneuvers) values (@title,@description,@ImageSource,@From,@Too,@json);";
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
+                    command.Parameters.AddWithValue("title", newEntry.Title);
+                    command.Parameters.AddWithValue("description", newEntry.Description);
+                    command.Parameters.AddWithValue("ImageSource", newEntry.ImgSource);
+                    command.Parameters.AddWithValue("From", newEntry.From);
+                    command.Parameters.AddWithValue("Too", newEntry.Too);
+                    command.Parameters.AddWithValue("json", JsonConvert.SerializeObject(newEntry.Maneuvers));
+
                     await command.ExecuteNonQueryAsync();
                     querystring = @$"Select max(tourID) from TourEntry";
                     using (NpgsqlCommand command2 = new NpgsqlCommand(querystring, conn))
@@ -57,9 +64,10 @@ namespace Swe2_tour_planer.helpers
         {
             try
             {
-                string querystring = @$"Delete from TourEntry where tourID = {newEntry.TourID} ";
+                string querystring = @$"Delete from TourEntry where tourID = @TourID{newEntry.TourID} ";
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
+                    command.Parameters.AddWithValue("TourID", newEntry.TourID);
                     await command.ExecuteNonQueryAsync();
                 }
                 conn.Close();
@@ -76,10 +84,17 @@ namespace Swe2_tour_planer.helpers
         {
             try
             {
-                string querystring = @$"Update TourEntry set title='{updateEntry.Title}',description='{updateEntry.Description}',imgSource='{updateEntry.ImgSource}',maneuvers='{JsonConvert.SerializeObject(updateEntry.Maneuvers)}' where tourID={updateEntry.TourID}";
+                string querystring = @$"Update TourEntry set title=@title,description=@description,imgSource=@ImageSource,maneuvers=@json,fromL=@From,too=@Too where tourID=@tourID";
                 log.Debug(querystring);
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
+                    command.Parameters.AddWithValue("title", updateEntry.Title);
+                    command.Parameters.AddWithValue("description", updateEntry.Description);
+                    command.Parameters.AddWithValue("ImageSource", updateEntry.ImgSource);
+                    command.Parameters.AddWithValue("From", updateEntry.From);
+                    command.Parameters.AddWithValue("Too", updateEntry.Too);
+                    command.Parameters.AddWithValue("json", JsonConvert.SerializeObject(updateEntry.Maneuvers));
+                    command.Parameters.AddWithValue("tourID", updateEntry.TourID);
                     await command.ExecuteNonQueryAsync();
                 }
                 conn.Close();

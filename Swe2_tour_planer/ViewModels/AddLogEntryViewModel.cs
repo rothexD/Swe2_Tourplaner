@@ -31,13 +31,14 @@ namespace Swe2_tour_planer.ViewModels
 
         public AddLogEntryViewModel(MainViewModel main, HomeViewModel home,Services service)
         {
+            Date = DateTime.Now;
             _mainviewModel = main;
             _homeviewModel = home;
             SaveLogCommand = new SaveNewTourLogCommand(this, _homeviewModel, service);
             SwitchView = new SwitchViewCommand(_mainviewModel);
         }
 
-        private string _date;
+        private DateTime _date;
         private string _duration;
         private string _distance;
         private string _rating;
@@ -51,7 +52,7 @@ namespace Swe2_tour_planer.ViewModels
         private string _statusmessage = "";
         private string _statuscolor = "Gray";
 
-        public string Date
+        public DateTime Date
         {
             get => this._date;
             set

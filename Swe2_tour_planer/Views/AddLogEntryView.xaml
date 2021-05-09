@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Swe2_tour_planer.Views"
+             xmlns:validation="clr-namespace:Swe2_tour_planer.Validation"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -16,38 +17,63 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <TextBox HorizontalAlignment="Left"  Margin="37,61,0,0" Text="{Binding Date,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="202" Height="20"/>
-            <TextBox HorizontalAlignment="Left" Margin="274,61,0,0" Text="{Binding Duration,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20"/>
-            <Button HorizontalAlignment="Left"  Margin="404,309,0,0" VerticalAlignment="Top" Command="{Binding SaveLogCommand}" FontSize="15" Height="35" Width="74">Save</Button>
-            <Button HorizontalAlignment="Left"  Margin="274,308,0,0" VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="HomeView" FontSize="15" Height="36" Width="74">Home</Button>
+            <DatePicker HorizontalAlignment="Left"  Margin="37,61,0,0" VerticalAlignment="Top" FontSize="15" Width="202" Height="29" SelectedDate="{Binding Date,UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox HorizontalAlignment="Left" Margin="274,61,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="29" Validation.ErrorTemplate="{StaticResource ValidationTemplate}">
+                <Binding Path="Duration" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <validation:AlphaNumvericValidation/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox>
+            <Button HorizontalAlignment="Left"  Margin="407,326,0,0" VerticalAlignment="Top" Command="{Binding SaveLogCommand}" FontSize="15" Height="35" Width="74" Grid.RowSpan="2">Save</Button>
+            <Button HorizontalAlignment="Left"  Margin="274,326,0,0" VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="HomeView" FontSize="15" Height="36" Width="74" Grid.RowSpan="2">Home</Button>
             <Label  HorizontalAlignment="Left" Margin="117,26,0,0" FontSize="15" VerticalAlignment="Top">Date</Label>
             <Label  HorizontalAlignment="Left" Margin="342,26,0,0" FontSize="15" VerticalAlignment="Top">Duration</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="514,61,0,0" Text="{Binding Distance,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20" />
+            <TextBox HorizontalAlignment="Left" Margin="514,61,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="29" Validation.ErrorTemplate="{StaticResource ValidationTemplate}">
+                <Binding Path="Distance" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <validation:AlphaNumvericValidation/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox>
             <Label  HorizontalAlignment="Left" Margin="583,26,0,0" FontSize="15" VerticalAlignment="Top" >Distance</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="514,130,0,0" Text="{Binding Rating,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20" />
+            <TextBox HorizontalAlignment="Left" Margin="514,125,0,0" Text="{Binding Rating,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="25" />
             <Label  HorizontalAlignment="Left" Margin="590,95,0,0" FontSize="15" VerticalAlignment="Top" >Rating</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="82,230,0,0" Text="{Binding Report,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="588" MinHeight="20"  Height="67"/>
-            <Label  HorizontalAlignment="Left" Margin="352,200,0,0" FontSize="15" VerticalAlignment="Top">Report</Label>
+            <TextBox HorizontalAlignment="Left" Margin="85,254,0,0" Text="{Binding Report,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="588" MinHeight="20"  Height="67" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+            <Label  HorizontalAlignment="Left" Margin="349,220,0,0" FontSize="15" VerticalAlignment="Top">Report</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="37,130,0,0" Text="{Binding AverageSpeed,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20"/>
+            <TextBox HorizontalAlignment="Left" Margin="37,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="25" Validation.ErrorTemplate="{StaticResource ValidationTemplate}">
+                <Binding Path="AverageSpeed" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <validation:AlphaNumvericValidation/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox>
+
             <Label  HorizontalAlignment="Left" Margin="88,95,0,0" FontSize="15" VerticalAlignment="Top">AverageSpeed</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="514,183,0,0" Text="{Binding EnergyUsed,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20" />
+            <TextBox HorizontalAlignment="Left" Margin="514,183,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="32" Validation.ErrorTemplate="{StaticResource ValidationTemplate}">
+                <Binding Path="EnergyUsed" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <validation:AlphaNumvericValidation/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox>
             <Label  HorizontalAlignment="Left" Margin="572,152,0,0" FontSize="15" VerticalAlignment="Top" >EnergyUsed</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="274,130,0,0" Text="{Binding Wheater,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20"/>
+            <TextBox HorizontalAlignment="Left" Margin="274,125,0,0" Text="{Binding Wheater,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="25"/>
             <Label  HorizontalAlignment="Left" Margin="343,95,0,0" FontSize="15" VerticalAlignment="Top">Wheater</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="39,183,0,0" Text="{Binding Traffic,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20"/>
+            <TextBox HorizontalAlignment="Left" Margin="39,185,0,0" Text="{Binding Traffic,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="30"/>
             <Label  HorizontalAlignment="Left" Margin="114,152,0,0" FontSize="15" VerticalAlignment="Top">Traffic</Label>
 
-            <TextBox HorizontalAlignment="Left" Margin="277,183,0,0" Text="{Binding NicenessOfLocals,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="20"/>
+            <TextBox HorizontalAlignment="Left" Margin="277,183,0,0" Text="{Binding NicenessOfLocals,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" Width="204" Height="32"/>
             <Label  HorizontalAlignment="Left" Margin="318,152,0,0" FontSize="15" VerticalAlignment="Top">NicenessofLocals</Label>
 
-            <Label  HorizontalAlignment="Left" Margin="500,300,0,0" FontSize="15" Content="{Binding Statusmessage}" Foreground="{Binding Statuscolor}" VerticalAlignment="Top" Height="46" Width="Auto"/>
+            <Label  HorizontalAlignment="Left" Margin="486,326,0,0" FontSize="15" Content="{Binding Statusmessage}" Foreground="{Binding Statuscolor}" VerticalAlignment="Top" Height="46" Width="Auto" Grid.RowSpan="2"/>
         </Grid>
     </Grid>
 </UserControl>

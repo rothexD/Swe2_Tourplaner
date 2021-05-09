@@ -51,7 +51,7 @@ namespace Swe2_tour_planer.helpers
         {
             try
             {
-                string uri = $@"http://www.mapquestapi.com/directions/v2/route?key={config["MapQuest:Key"]}&from={from}&to={too}";
+                string uri = $@"https://www.mapquestapi.com/directions/v2/route?key={config["MapQuest:Key"]}&from={from}&to={too}";
                 uri = Uri.EscapeUriString(uri);
                 var response = await client.GetAsync(uri);
 

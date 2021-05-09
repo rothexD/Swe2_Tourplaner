@@ -65,7 +65,7 @@ namespace Swe2_tour_planer.helpers
                 querystring = @"Create table if not exists LogEntry(
                                         logID serial primary key,
                                         tourID_fk int,
-                                        date varchar,
+                                        date timestamp,
                                         duration varchar,
                                         distance varchar,
                                         rating varchar,
@@ -127,10 +127,11 @@ namespace Swe2_tour_planer.helpers
         public async Task<ObservableCollection<LogEntry>> GetListOfLogs(int TourID)
         {
             try { 
-            string querystring = @$"Select * from LogEntry where tourID_fk = {TourID}";
+            string querystring = @$"Select * from LogEntry where tourID_fk = @tourID";
             var conn = Create();
             using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
             {
+                    command.Parameters.AddWithValue("tourID", TourID);
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 ObservableCollection<LogEntry> TourList = new ObservableCollection<LogEntry>();
 
@@ -141,7 +142,7 @@ namespace Swe2_tour_planer.helpers
 
                 while (reader.Read())
                 {
-                    var item = new LogEntry(Int32.Parse(reader[0].ToString()), Int32.Parse(reader[1].ToString()), reader[2].ToString(), reader[3].ToString(),
+                    var item = new LogEntry(Int32.Parse(reader[0].ToString()), Int32.Parse(reader[1].ToString()), Convert.ToDateTime(reader[2].ToString()), reader[3].ToString(),
                         reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
                     TourList.Add(item);
                 }
@@ -161,10 +162,11 @@ namespace Swe2_tour_planer.helpers
         {
             try
             {
-                string querystring = @$"Delete from TourEntry where tourID = {ID} ";
+                string querystring = @$"Delete from TourEntry where tourID = @ID ";
                 var conn = Create();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
+                    command.Parameters.AddWithValue("ID", ID);
                     await command.ExecuteNonQueryAsync();
                 }
                 conn.Close();
@@ -181,10 +183,11 @@ namespace Swe2_tour_planer.helpers
         {
             try
             {
-                string querystring = @$"Delete from LogEntry where logID = {ID} ";
+                string querystring = @$"Delete from LogEntry where logID = @ID ";
                 var conn = Create();
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
+                    command.Parameters.AddWithValue("ID", ID);
                     await command.ExecuteNonQueryAsync();
 
                 }

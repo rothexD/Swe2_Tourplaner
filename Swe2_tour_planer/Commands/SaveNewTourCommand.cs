@@ -70,16 +70,16 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                var a = await _service.AddNewTour(_addTourViewModel.InputTitle, _addTourViewModel.InputDescription, _addTourViewModel.InputFrom, _addTourViewModel.InputTo);
+                var a = await _service.AddNewTour(_addTourViewModel.InputTitle, _addTourViewModel.InputFrom, _addTourViewModel.InputTo, _addTourViewModel.InputDescription);
                 log.Info($"Added new Tour by Command success TourID: {a.ToString()}");
                 _addTourViewModel.Statuscolor = "Green";
-                _addTourViewModel.Statusmessage = "Added Last Tour successfully";
+                _addTourViewModel.Statusmessage = "";
                 _addTourViewModel.InputTitle = "";
                 _addTourViewModel.InputDescription = "";
                 _addTourViewModel.InputFrom = "";
                 _addTourViewModel.InputTo = "";
                 _HomeViewModel.OnPropertyChanged("ListTourEntryRefresh");
-                _HomeViewModel.SwitchView.Execute("homeView");
+                _HomeViewModel.SwitchView.Execute("HomeView");
             }
             catch(Exception e)
             {

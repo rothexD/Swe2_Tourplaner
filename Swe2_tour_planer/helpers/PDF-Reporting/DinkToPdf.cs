@@ -22,7 +22,7 @@ namespace Swe2_tour_planer.helpers
             string TourHtml = "";
             TourHtml += $"<h1>Tour from {Tour.Title}</h1>";
             TourHtml += HeadingHtml("2", "Location");
-            TourHtml += ParagraphHtml($"From:{Tour.From}<br>Too:{Tour.Too}");
+            TourHtml += ParagraphHtml($"From: {Tour.From}<br>Too: {Tour.Too}");
 
             TourHtml += HeadingHtml("2", "Description");
             TourHtml += ParagraphHtml(Tour.Description);
@@ -30,7 +30,7 @@ namespace Swe2_tour_planer.helpers
             TourHtml += HeadingHtml("2", "Maneuvers");
             foreach (var item in Tour.Maneuvers)
             {
-                TourHtml += ParagraphHtml($"Direction:{item.DirectionName},Distance:{item.DistanceInKm()}km,narrative:{item.Narrative}<br>");
+                TourHtml += ParagraphHtml($"Direction: {item.DirectionName},Distance: {item.DistanceInKm()}km,narrative: {item.Narrative}<br>");
             }
             return TourHtml;
         }

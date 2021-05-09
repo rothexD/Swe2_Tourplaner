@@ -5,6 +5,7 @@ using Swe2_tour_planer.ViewModels;
 using Swe2_tour_planer.Model;
 using Swe2_tour_planer.helpers;
 using Swe2_tour_planer.Logik;
+using Swe2_tour_planer.Validation;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -15,7 +16,7 @@ namespace Swe2_tour_planer.Commands
         private Services _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public event EventHandler? CanExecuteChanged;
-
+        private readonly AlphaNumvericValidation validator = new AlphaNumvericValidation();
         public SaveNewTourLogCommand(AddLogEntryViewModel AddLogViewModel,HomeViewModel home,Services service)
         {
 
@@ -80,15 +81,15 @@ namespace Swe2_tour_planer.Commands
 
         public bool CanExecute(object? parameter)
         {
-            if (string.IsNullOrWhiteSpace(_AddlogViewModel.Date))
+            if (string.IsNullOrWhiteSpace(_AddlogViewModel.Date.ToString()))
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_AddlogViewModel.Duration))
+            if (!validator.Validate(_AddlogViewModel.Duration,null).IsValid)
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_AddlogViewModel.Distance))
+            if (!validator.Validate(_AddlogViewModel.Distance, null).IsValid)
             {
                 return false;
             }
@@ -100,11 +101,11 @@ namespace Swe2_tour_planer.Commands
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_AddlogViewModel.AverageSpeed))
+            if (!validator.Validate(_AddlogViewModel.AverageSpeed, null).IsValid)
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_AddlogViewModel.EnergyUsed))
+            if (!validator.Validate(_AddlogViewModel.EnergyUsed, null).IsValid)
             {
                 return false;
             }
@@ -149,8 +150,8 @@ namespace Swe2_tour_planer.Commands
 
 
                 _AddlogViewModel.Statuscolor = "Green";
-                _AddlogViewModel.Statusmessage = "Added Log successfully";
-                _AddlogViewModel.Date = "";
+                _AddlogViewModel.Statusmessage = "";
+                _AddlogViewModel.Date = new DateTime();
                     _AddlogViewModel.Duration = "";
                 _AddlogViewModel.Distance = "";
                 _AddlogViewModel.Rating = "";
@@ -162,7 +163,7 @@ namespace Swe2_tour_planer.Commands
                 _AddlogViewModel.NicenessOfLocals = "";
                 log.Info("Adding new Logentry success");
                 _HomeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
-                _HomeViewModel.SwitchView.Execute("homeView");
+                _HomeViewModel.SwitchView.Execute("HomeView");
             }
             catch
             {

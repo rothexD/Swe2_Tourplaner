@@ -30,5 +30,26 @@
         <DataTemplate DataType="{x:Type viewmodels:UpdateLogViewModel}">
             <Views:AddLogEntryView/>
         </DataTemplate>
+        <ControlTemplate x:Key="ValidationTemplate" >
+            <Border BorderBrush="Red"
+            BorderThickness="1">
+                <Grid Background="Transparent" IsHitTestVisible="True"
+              ToolTip="{Binding Path=/ErrorContent}">
+                    <AdornedElementPlaceholder/>
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseDirectlyOver" Value="True">
+                                    <Setter Property="IsHitTestVisible" Value="True"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseDirectlyOver" Value="False">
+                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                </Grid>
+            </Border>
+        </ControlTemplate>
     </Application.Resources>
 </Application>
