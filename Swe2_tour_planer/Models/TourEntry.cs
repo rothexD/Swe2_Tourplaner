@@ -1,13 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Swe2_tour_planer.Model;
-using Swe2_tour_planer.helpers;
-using System.Collections.Generic;
-using static Swe2_tour_planer.helpers.MapQuestJson;
-using Newtonsoft.Json;
+using static Swe2_tour_planer.Models.MapQuestJson;
 
-namespace Swe2_tour_planer.Model
+namespace Swe2_tour_planer.Models
 {
     public class TourEntry : INotifyPropertyChanged
     {
@@ -20,9 +18,9 @@ namespace Swe2_tour_planer.Model
         private string _from;
         private string _too;
         private ObservableCollection<CustomManeuvers> _maneuvers = new ObservableCollection<CustomManeuvers>();
-        
+
         [JsonConstructor]
-        public TourEntry(int tourID, string title, string description, string _imgSource,string from,string too,string Jsonmaneuvers)
+        public TourEntry(int tourID, string title, string description, string _imgSource, string from, string too, string Jsonmaneuvers)
         {
             this.Title = title;
             this.Description = description;
@@ -30,7 +28,7 @@ namespace Swe2_tour_planer.Model
             this._tourID = tourID;
             this.From = from;
             this.Too = too;
-            Maneuvers = JsonConvert.DeserializeObject<ObservableCollection<CustomManeuvers>>(Jsonmaneuvers??"");
+            Maneuvers = JsonConvert.DeserializeObject<ObservableCollection<CustomManeuvers>>(Jsonmaneuvers ?? "");
         }
         public TourEntry(int tourID, string title, string description, string _imgSource, string from, string too, List<CustomManeuvers> maneuvers)
         {

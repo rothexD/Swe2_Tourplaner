@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 
+[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 namespace Swe2_tour_planer
 {
     /// <summary>

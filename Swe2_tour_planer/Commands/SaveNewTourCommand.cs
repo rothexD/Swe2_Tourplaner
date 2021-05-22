@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Swe2_tour_planer.Services;
+using Swe2_tour_planer.ViewModels;
+using System;
 using System.Diagnostics;
 using System.Windows.Input;
-using Swe2_tour_planer.Model;
-using Swe2_tour_planer.ViewModels;
-using Swe2_tour_planer.helpers;
-using Newtonsoft.Json;
-using Swe2_tour_planer.Logik;
+
 
 namespace Swe2_tour_planer.Commands
 {
@@ -14,10 +12,10 @@ namespace Swe2_tour_planer.Commands
         private readonly AddTourViewModel _addTourViewModel;
         public event EventHandler? CanExecuteChanged;
         private readonly HomeViewModel _HomeViewModel;
-        private Services _service;
+        private ServicesAccess _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public SaveNewTourCommand(AddTourViewModel tourViewModel,HomeViewModel home,Services service)
+        public SaveNewTourCommand(AddTourViewModel tourViewModel, HomeViewModel home, ServicesAccess service)
         {
             _HomeViewModel = home;
             this._addTourViewModel = tourViewModel;
@@ -49,10 +47,12 @@ namespace Swe2_tour_planer.Commands
 
         public bool CanExecute(object? parameter)
         {
-            if (string.IsNullOrWhiteSpace(_addTourViewModel.InputTitle)){
+            if (string.IsNullOrWhiteSpace(_addTourViewModel.InputTitle))
+            {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_addTourViewModel.InputDescription)){
+            if (string.IsNullOrWhiteSpace(_addTourViewModel.InputDescription))
+            {
                 return false;
             }
             if (string.IsNullOrWhiteSpace(_addTourViewModel.InputFrom))
@@ -70,7 +70,7 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                var a = await _service.AddNewTour(_addTourViewModel.InputTitle, _addTourViewModel.InputFrom, _addTourViewModel.InputTo, _addTourViewModel.InputDescription);
+                var a = await _service.AddNewTourAsync(_addTourViewModel.InputTitle, _addTourViewModel.InputFrom, _addTourViewModel.InputTo, _addTourViewModel.InputDescription);
                 log.Info($"Added new Tour by Command success TourID: {a.ToString()}");
                 _addTourViewModel.Statuscolor = "Green";
                 _addTourViewModel.Statusmessage = "";
@@ -81,14 +81,14 @@ namespace Swe2_tour_planer.Commands
                 _HomeViewModel.OnPropertyChanged("ListTourEntryRefresh");
                 _HomeViewModel.SwitchView.Execute("HomeView");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Info("Added new Tour by Command failed");
                 _addTourViewModel.Statuscolor = "Red";
                 _addTourViewModel.Statusmessage = "Failed add Last Tour ";
                 log.Error(e.StackTrace);
             }
-            
+
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using Swe2_tour_planer.ViewModels;
+﻿using Swe2_tour_planer.ViewModels;
+using System.Windows;
 
-[assembly: log4net.Config.XmlConfigurator(Watch = true)]
+
 namespace Swe2_tour_planer
 {
     /// <summary>
@@ -12,7 +12,7 @@ namespace Swe2_tour_planer
         public MainWindow()
         {
             DataContext = new MainViewModel();
-            InitializeComponent();       
+            InitializeComponent();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

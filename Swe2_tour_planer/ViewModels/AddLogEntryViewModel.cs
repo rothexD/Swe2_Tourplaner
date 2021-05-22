@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Swe2_tour_planer.Commands;
-using Swe2_tour_planer.Model;
-using System.Collections.ObjectModel;
+﻿using Swe2_tour_planer.Commands;
+using Swe2_tour_planer.Services;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Swe2_tour_planer.Logik;
-
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -29,7 +22,7 @@ namespace Swe2_tour_planer.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public AddLogEntryViewModel(MainViewModel main, HomeViewModel home,Services service)
+        public AddLogEntryViewModel(MainViewModel main, HomeViewModel home, ServicesAccess service)
         {
             Date = DateTime.Now;
             _mainviewModel = main;

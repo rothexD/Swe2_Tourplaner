@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Swe2_tour_planer.Commands;
-using Swe2_tour_planer.Model;
-using System.Collections.ObjectModel;
+﻿using Swe2_tour_planer.Commands;
+using Swe2_tour_planer.Services;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using System.ComponentModel;
-using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -26,7 +19,7 @@ namespace Swe2_tour_planer.ViewModels
             Debug.Print($"propertyChanged \"{propertyName}\"");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public ReportViewModel(MainViewModel main, HomeViewModel home, Services service)
+        public ReportViewModel(MainViewModel main, HomeViewModel home, ServicesAccess service)
         {
             _mainviewModel = main;
             _homeViewModel = home;

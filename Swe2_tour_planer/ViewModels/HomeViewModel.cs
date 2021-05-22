@@ -1,20 +1,14 @@
-﻿using Swe2_tour_planer.Commands;
-using Swe2_tour_planer.Model;
+﻿using Microsoft.Extensions.Configuration;
+using Swe2_tour_planer.Commands;
+using Swe2_tour_planer.Models;
+using Swe2_tour_planer.Services;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Swe2_tour_planer.helpers;
-using Microsoft.Extensions.Configuration;
-using System.Windows.Media.Imaging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Media;
-using System.IO;
-using System.Windows.Controls;
-using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -25,7 +19,7 @@ namespace Swe2_tour_planer.ViewModels
         private readonly MainViewModel _main;
 
         private ObservableCollection<LogsAndTours> _listLogsAndTours { get; set; } = new ObservableCollection<LogsAndTours>();
-        private readonly Services _services;
+        private readonly ServicesAccess _services;
         public ObservableCollection<TourEntry> _data { get; set; } = new ObservableCollection<TourEntry>();
         public ICommand RemoveTourCommand { get; }
         public ICommand SearchbarCommand { get; }
@@ -78,7 +72,7 @@ namespace Swe2_tour_planer.ViewModels
         }
         public byte[] ImgSourceWithLocation
         {
-            get 
+            get
             {
                 string ImageUri = "default.jpg";
                 if (CurrentActiveTour != null && CurrentActiveTour.ImgSource != null)
@@ -89,7 +83,7 @@ namespace Swe2_tour_planer.ViewModels
                 return bytes;
             }
         }
-        public List<LogEntry> CurrentActiveLogs 
+        public List<LogEntry> CurrentActiveLogs
         {
             get
             {
@@ -115,7 +109,7 @@ namespace Swe2_tour_planer.ViewModels
                 }
             }
         }
-        
+
         public TourEntry CurrentActiveTour
         {
             get
@@ -124,6 +118,12 @@ namespace Swe2_tour_planer.ViewModels
             }
             set
             {
+                if(value == null)
+                {
+                    if (Data.ToList().Contains(CurrentActiveTour)){
+                        return;
+                    }
+                }
                 Debug.Print("set _currentActiveTour");
                 _currentActiveTour = value;
 
@@ -141,7 +141,7 @@ namespace Swe2_tour_planer.ViewModels
         }
         public async void getAllToursAndLogs()
         {
-            var logsAndTours = await _services.ListLogsAndTours();
+            var logsAndTours = await _services.ListLogsAndToursAsync();
             ListLogsAndTours.Clear();
             logsAndTours.ForEach(x => ListLogsAndTours.Add(x));
             FillData(ListLogsAndTours.ToList());
@@ -150,8 +150,9 @@ namespace Swe2_tour_planer.ViewModels
         {
             Data.Clear();
             fill.ForEach(x => Data.Add(x.Tour));
+            this.OnPropertyChanged(nameof(CurrentActiveLogs));
         }
-        public HomeViewModel(MainViewModel main, Services service)
+        public HomeViewModel(MainViewModel main, ServicesAccess service)
         {
             Debug.Print("ctor MainViewModel");
             _main = main;
@@ -177,7 +178,6 @@ namespace Swe2_tour_planer.ViewModels
                 if (args.PropertyName == "ListTourEntryRefresh")
                 {
                     getAllToursAndLogs();
-                    FillData(ListLogsAndTours.ToList());
                 }
                 if (args.PropertyName == "ListLogRefresh")
                 {
@@ -185,12 +185,10 @@ namespace Swe2_tour_planer.ViewModels
                 if (args.PropertyName == "CurrentActiveTourChanged")
                 {
                     getAllToursAndLogs();
-                    FillData(ListLogsAndTours.ToList());
                 }
                 if (args.PropertyName == "CurrentActiveLogsRefresh")
                 {
                     getAllToursAndLogs();
-                    FillData(ListLogsAndTours.ToList());
                 }
                 if (args.PropertyName == "Searchbar")
                 {
@@ -200,15 +198,15 @@ namespace Swe2_tour_planer.ViewModels
         }
         private void SearchFunction()
         {
-            if(Searchbar == "")
+            if (Searchbar == "")
             {
                 FillData(ListLogsAndTours.ToList());
                 return;
             }
-            var list = _services.Search(ListLogsAndTours.ToList(), Searchbar);
+            var list = _services.SearchAsync(ListLogsAndTours.ToList(), Searchbar);
             FillData(list);
         }
-  
+
 
         public virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

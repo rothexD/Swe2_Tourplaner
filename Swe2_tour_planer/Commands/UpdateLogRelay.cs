@@ -1,8 +1,8 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Swe2_tour_planer.ViewModels;
+using System;
 using System.Linq;
 using System.Windows.Input;
-using Swe2_tour_planer.ViewModels;
+
 
 
 namespace Swe2_tour_planer.Commands
@@ -23,14 +23,14 @@ namespace Swe2_tour_planer.Commands
                 if (args.PropertyName == "CurrentActiveTour")
                 {
                     CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                }             
+                }
             };
         }
 
         public bool CanExecute(object? parameter)
         {
 
-            return true; 
+            return true;
         }
 
         public void Execute(object? parameter)

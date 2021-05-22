@@ -1,11 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows.Input;
-using Swe2_tour_planer.ViewModels;
-using Swe2_tour_planer.Model;
-using Swe2_tour_planer.helpers;
-using Swe2_tour_planer.Logik;
+﻿using Swe2_tour_planer.Models;
+using Swe2_tour_planer.Services;
 using Swe2_tour_planer.Validation;
+using Swe2_tour_planer.ViewModels;
+using System;
+using System.Windows.Input;
+
 
 namespace Swe2_tour_planer.Commands
 {
@@ -14,11 +13,11 @@ namespace Swe2_tour_planer.Commands
         private readonly UpdateLogViewModel _UpdateLogViewModel;
         private readonly HomeViewModel _HomeViewModel;
         private readonly SwitchViewCommand _SwitchView;
-        private Services _service;
+        private ServicesAccess _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public event EventHandler? CanExecuteChanged;
         private readonly AlphaNumvericValidation validator = new AlphaNumvericValidation();
-        public UpdateLogCommand(UpdateLogViewModel updateLogViewModel, HomeViewModel home,SwitchViewCommand switchView,Services service)
+        public UpdateLogCommand(UpdateLogViewModel updateLogViewModel, HomeViewModel home, SwitchViewCommand switchView, ServicesAccess service)
         {
 
             this._UpdateLogViewModel = updateLogViewModel;
@@ -141,8 +140,7 @@ namespace Swe2_tour_planer.Commands
                     _UpdateLogViewModel.NicenessOfLocals
                     );
 
-                await _service.UpdateLog(log);
-                _HomeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
+                await _service.UpdateLogAsync(log);
                 _HomeViewModel.OnPropertyChanged("CurrentActiveLogsRefresh");
 
                 UpdateLogCommand.log.Info("Update Logentry success");

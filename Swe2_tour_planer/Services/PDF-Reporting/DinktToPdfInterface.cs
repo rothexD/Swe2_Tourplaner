@@ -1,11 +1,7 @@
-﻿using System;
+﻿using Swe2_tour_planer.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Swe2_tour_planer.Model;
 
-namespace Swe2_tour_planer.helpers
+namespace Swe2_tour_planer.Services
 {
     public interface IDinkToPdfClass
     {

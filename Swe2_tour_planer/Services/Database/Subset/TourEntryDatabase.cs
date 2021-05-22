@@ -1,19 +1,16 @@
-﻿using Npgsql;
+﻿using Newtonsoft.Json;
+using Npgsql;
+using Swe2_tour_planer.Models;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using Swe2_tour_planer.Model;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
-namespace Swe2_tour_planer.helpers
+namespace Swe2_tour_planer.Services
+
 {
     public class TourEntryDatabase : ITourEntryDatabase
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-         public async Task<int> AddTourToDatabase(TourEntry newEntry, NpgsqlConnection conn)
+        public async Task<int> AddTourToDatabaseAsync(TourEntry newEntry, NpgsqlConnection conn)
         {
             try
             {
@@ -33,7 +30,7 @@ namespace Swe2_tour_planer.helpers
                     {
                         try
                         {
-                            var reader = await command2.ExecuteReaderAsync();                       
+                            var reader = await command2.ExecuteReaderAsync();
                             if (reader.HasRows)
                             {
                                 reader.Read();
@@ -45,22 +42,24 @@ namespace Swe2_tour_planer.helpers
                             conn.Close();
                             return -1;
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             log.Error("lastval failed");
+                            log.Debug(e.StackTrace); 
                             throw e;
                         }
-                       
+
                     }
                 }
             }
             catch (Exception e)
             {
                 log.Error("Adding of new Tour Failed");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }
-        public async Task<int> RemoveTourFromDatabase(TourEntry newEntry, NpgsqlConnection conn)
+        public async Task<int> RemoveTourFromDatabaseAsync(TourEntry newEntry, NpgsqlConnection conn)
         {
             try
             {
@@ -77,10 +76,11 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Removing of Tour failed");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }
-        public async Task<int> UpdateTourInDatabase(TourEntry updateEntry, NpgsqlConnection conn)
+        public async Task<int> UpdateTourInDatabaseAsync(TourEntry updateEntry, NpgsqlConnection conn)
         {
             try
             {
@@ -103,6 +103,7 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Update of Tour failed");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }

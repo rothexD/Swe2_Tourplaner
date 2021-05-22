@@ -1,25 +1,28 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.IO;
-using Newtonsoft.Json;
-using static Swe2_tour_planer.helpers.MapQuestJson;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using System.Linq;
+using static Swe2_tour_planer.Models.MapQuestJson;
 
-namespace Swe2_tour_planer.helpers
+namespace Swe2_tour_planer.Services
 {
-    public class MapQuestApiHelper : IMapQuestApiHelper
+    public class MapQuestApi : IMapQuestApiHelper
     {
         static readonly HttpClient client = new HttpClient();
-        private static readonly log4net.ILog log =log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly IConfiguration config = new ConfigurationBuilder().AddJsonFile("Appsettings.json", false, true).Build();
+        private readonly IFileSystemAccess _fileSystemAccess;
+
+        public MapQuestApi(IFileSystemAccess fileSystem)
+        {
+            _fileSystemAccess = fileSystem;
+        }
 
         //https://www.mapquestapi.com/staticmap/v5/map?start=New+York,NY&end=Washington,DC&size=600,400@2x&key=KEY
-        public async Task<string> getMapImage(string from, string too, string x_pixel = "500", string y_pixel = "500")
+        public async Task<string> GetMapImageAsync(string from, string too, string x_pixel = "500", string y_pixel = "500")
         {
             try
             {
@@ -32,22 +35,19 @@ namespace Swe2_tour_planer.helpers
                 id += ".jpg";
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
-                    var fileInfo = new FileInfo(config["MapQuest:Location"] + id);
-                    using (var fileStream = fileInfo.OpenWrite())
-                    {
-                        await stream.CopyToAsync(fileStream);
-                    }
+                    await _fileSystemAccess.SaveToFileSystemFromStreamAsync(config["MapQuest:Location"] + id, stream);
                 }
                 log.Info("got image and stored to disk");
                 return id;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("could not get image to route");
+                log.Debug(e.StackTrace); 
                 throw e;
-            }     
+            }
         }
-        public  async Task<List<CustomManeuvers>> getRoute(string from, string too)
+        public async Task<List<CustomManeuvers>> GetRouteAsync(string from, string too)
         {
             try
             {
@@ -84,9 +84,10 @@ namespace Swe2_tour_planer.helpers
                 log.Info("successful Route");
                 return customMan;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("Exception occured in get Route\n");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }

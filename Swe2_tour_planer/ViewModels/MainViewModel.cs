@@ -1,26 +1,21 @@
-﻿using Swe2_tour_planer.Commands;
-using Swe2_tour_planer.Model;
-using System.Collections.ObjectModel;
+﻿using Swe2_tour_planer.Models;
+using Swe2_tour_planer.Services;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Swe2_tour_planer.helpers;
-using Swe2_tour_planer.Logik;
-using System;
 
 namespace Swe2_tour_planer.ViewModels
 {
     public class MainViewModel : BaseViewModel, INotifyPropertyChanged
     {
         private BaseViewModel _selectedViewModel;
-        private Dictionary<string,BaseViewModel> ViewList = new Dictionary<string,BaseViewModel>();
+        private Dictionary<string, BaseViewModel> ViewList = new Dictionary<string, BaseViewModel>();
         public event PropertyChangedEventHandler PropertyChanged;
         private UpdateTourViewModel _updateTourViewModel;
         private UpdateLogViewModel _updateLogViewModel;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public BaseViewModel SelectedViewModel
         {
             get { return _selectedViewModel; }
@@ -28,37 +23,49 @@ namespace Swe2_tour_planer.ViewModels
         }
         public MainViewModel()
         {
-            var service = new Services(new DatabaseHelper(),new MapQuestApiHelper(),new ImportExporthelper(),new DinkToPdfClass());
-            var home = new HomeViewModel(this, service);
-           
-            ViewList.Add("HomeView", home);
-            ViewList.Add("AddLogEntryView", new AddLogEntryViewModel(this, home, service));
-            ViewList.Add("AddTourView", new AddTourViewModel(this,home, service));
-            ViewList.Add("ExportView", new ExportViewModel(this,home, service));
-            ViewList.Add("ImportView", new ImportViewModel(this,home, service));
-            ViewList.Add("ReportView", new ReportViewModel(this,home, service));
+            try
+            {
+                var fileSystem = new FileSystemAccess();
+                var service = new ServicesAccess(new Database(true), new MapQuestApi(fileSystem), fileSystem, new DinkToPdfClass());
+                var home = new HomeViewModel(this, service);
 
-            _updateLogViewModel = new UpdateLogViewModel(this, home, service);
-            ViewList.Add("UpdateLog", _updateLogViewModel);
+                ViewList.Add("HomeView", home);
+                ViewList.Add("AddLogEntryView", new AddLogEntryViewModel(this, home, service));
+                ViewList.Add("AddTourView", new AddTourViewModel(this, home, service));
+                ViewList.Add("ExportView", new ExportViewModel(this, home, service));
+                ViewList.Add("ImportView", new ImportViewModel(this, home, service));
+                ViewList.Add("ReportView", new ReportViewModel(this, home, service));
 
-            _updateTourViewModel = new UpdateTourViewModel(this, home, service);
-            ViewList.Add("UpdateTour", _updateTourViewModel);
-            new DatabaseHelper(true);
-            RequestChangeViewModel("HomeView");
+                _updateLogViewModel = new UpdateLogViewModel(this, home, service);
+                ViewList.Add("UpdateLog", _updateLogViewModel);
+
+                _updateTourViewModel = new UpdateTourViewModel(this, home, service);
+                ViewList.Add("UpdateTour", _updateTourViewModel);
+                RequestChangeViewModel("HomeView");
+            }catch(Exception e){
+                log.Error("could not create MainviewModel, maybe database not running");
+                log.Debug(e.StackTrace);
+                log.Debug(e.Message);
+                Environment.Exit(1);
+            }
+         
         }
         public void RequestChangeViewModel(string ViewName)
         {
             try
             {
                 ViewList.TryGetValue(ViewName, out BaseViewModel value);
-                if(value == null){
+                if (value == null)
+                {
                     return;
                 }
                 SelectedViewModel = value;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-
+                log.Error("failed to switch view");
+                log.Debug(e.Message);
+                log.Debug(e.StackTrace);
             }
         }
         public void ChangeTourToUpdate(TourEntry tour)

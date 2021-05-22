@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Swe2_tour_planer.Commands;
-using Swe2_tour_planer.Model;
-using System.Collections.ObjectModel;
+﻿using Swe2_tour_planer.Commands;
+using Swe2_tour_planer.Models;
+using Swe2_tour_planer.Services;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Swe2_tour_planer.Logik;
 
 namespace Swe2_tour_planer.ViewModels
 {
@@ -29,12 +24,12 @@ namespace Swe2_tour_planer.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public UpdateLogViewModel(MainViewModel main, HomeViewModel home, Services service)
+        public UpdateLogViewModel(MainViewModel main, HomeViewModel home, ServicesAccess service)
         {
             _mainviewModel = main;
             _homeviewModel = home;
             SwitchView = new SwitchViewCommand(_mainviewModel);
-            SaveLogCommand = new UpdateLogCommand(this, _homeviewModel, new SwitchViewCommand(_mainviewModel),service);        
+            SaveLogCommand = new UpdateLogCommand(this, _homeviewModel, new SwitchViewCommand(_mainviewModel), service);
         }
 
         private DateTime _date;
@@ -59,7 +54,7 @@ namespace Swe2_tour_planer.ViewModels
             get => this._logBeforeChanges;
             set
             {
-                if(value == null)
+                if (value == null)
                 {
                     return;
                 }

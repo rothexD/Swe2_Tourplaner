@@ -1,15 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows.Input;
+﻿using Microsoft.Win32;
+using Swe2_tour_planer.Models;
+using Swe2_tour_planer.Services;
 using Swe2_tour_planer.ViewModels;
-using System.IO;
-using Swe2_tour_planer.helpers;
-using Swe2_tour_planer.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
-using Microsoft.Win32;
-using Swe2_tour_planer.Logik;
+using System.Windows.Input;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -18,13 +14,13 @@ namespace Swe2_tour_planer.Commands
         private readonly HomeViewModel _homeViewModel;
         private readonly ReportViewModel _reportviewmodel;
         public event EventHandler? CanExecuteChanged;
-        private Services _service;
+        private ServicesAccess _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public PrintReportCommand(HomeViewModel homeViewModel,Services service)
+        public PrintReportCommand(HomeViewModel homeViewModel, ServicesAccess service)
         {
 
-            this._homeViewModel= homeViewModel;
+            this._homeViewModel = homeViewModel;
             this._service = service;
             _homeViewModel.PropertyChanged += (sender, args) =>
             {
@@ -32,12 +28,12 @@ namespace Swe2_tour_planer.Commands
                 {
                     CanExecuteChanged?.Invoke(this, EventArgs.Empty);
                 }
-            }; 
+            };
         }
 
         public bool CanExecute(object? parameter)
         {
-            if(_homeViewModel.CurrentActiveTour == null)
+            if (_homeViewModel.CurrentActiveTour == null)
             {
                 return false;
             }
@@ -55,7 +51,7 @@ namespace Swe2_tour_planer.Commands
                     Tour = tourItem,
                     Logs = logsItem
                 };
-                
+
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.DefaultExt = "pdf";
@@ -63,14 +59,14 @@ namespace Swe2_tour_planer.Commands
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     _service.PrintReport(saveFileDialog.FileName, item);
-                }               
+                }
                 log.Info("successfully created pdf");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("failed to create pdf");
                 log.Debug(e.Message);
-            }        
+            }
         }
     }
 }

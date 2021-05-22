@@ -1,21 +1,20 @@
 using NUnit.Framework;
-using Swe2_tour_planer.Logik;
-using Swe2_tour_planer.Model;
-using Swe2_tour_planer.helpers;
+using Swe2_tour_planer.Models;
+using Swe2_tour_planer.Services;
 using Moq;
 using System.Collections.Generic;
 using Swe2_tour_planer.ViewModels;
 using System;
-using static Swe2_tour_planer.helpers.MapQuestJson;
 using Npgsql;
 using System.Threading.Tasks;
 using System.IO;
+using static Swe2_tour_planer.Models.MapQuestJson;
 
 namespace Unit_Tests
 {
     public class Tests
     {
-        private Services _service = new Services(new DatabaseHelper(),new MapQuestApiHelper(),new ImportExporthelper(),new DinkToPdfClass());
+        private ServicesAccess _service;
         private List<LogsAndTours> listLogsAndTours;
         private TourEntry _tempstorageEntry;
         private LogEntry _tempstorageLog;
@@ -45,7 +44,8 @@ namespace Unit_Tests
         [SetUp]
         public void Setup()
         {
-            _service = new Services(new DatabaseHelper(), new MapQuestApiHelper(), new ImportExporthelper(), new DinkToPdfClass());
+            var fileSystem = new FileSystemAccess();
+            _service = new ServicesAccess(new Database(), new MapQuestApi(fileSystem), fileSystem, new DinkToPdfClass());
 
             listLogsAndTours = new List<LogsAndTours>();
             
@@ -91,34 +91,34 @@ namespace Unit_Tests
         }
         private void SetupServicesDbMocBasic()
         {
-            var DatabaseMoq = new Mock<IDatabaseHelper>();
-            DatabaseMoq.Setup(x => x.TourData.AddTourToDatabase(It.IsAny<TourEntry>(), It.IsAny<NpgsqlConnection>())).Callback((TourEntry a, NpgsqlConnection b) => _tempstorageEntry = a);
-            DatabaseMoq.Setup(x => x.TourData.UpdateTourInDatabase(It.IsAny<TourEntry>(), It.IsAny<NpgsqlConnection>())).Callback((TourEntry a, NpgsqlConnection b) => _tempstorageEntry = a);
+            var DatabaseMoq = new Mock<IDatabase>();
+            DatabaseMoq.Setup(x => x.TourData.AddTourToDatabaseAsync(It.IsAny<TourEntry>(), It.IsAny<NpgsqlConnection>())).Callback((TourEntry a, NpgsqlConnection b) => _tempstorageEntry = a);
+            DatabaseMoq.Setup(x => x.TourData.UpdateTourInDatabaseAsync(It.IsAny<TourEntry>(), It.IsAny<NpgsqlConnection>())).Callback((TourEntry a, NpgsqlConnection b) => _tempstorageEntry = a);
 
-            DatabaseMoq.Setup(x => x.LogData.AddLogToDatabase(It.IsAny<LogEntry>(), It.IsAny<NpgsqlConnection>())).Callback((LogEntry a, NpgsqlConnection b) => _tempstorageLog = a);
-            DatabaseMoq.Setup(x => x.LogData.UpdateLogInDatabase(It.IsAny<LogEntry>(), It.IsAny<NpgsqlConnection>())).Callback((LogEntry a, NpgsqlConnection b) => _tempstorageLog = a);
-            DatabaseMoq.Setup(x => x.LogData.AddLogToDatabase(It.IsAny<LogEntry>(),It.IsAny<int>(), It.IsAny<NpgsqlConnection>())).Callback((LogEntry a,int b, NpgsqlConnection c) => _tempstorageLog = a);
+            DatabaseMoq.Setup(x => x.LogData.AddLogToDatabaseAsync(It.IsAny<LogEntry>(), It.IsAny<NpgsqlConnection>())).Callback((LogEntry a, NpgsqlConnection b) => _tempstorageLog = a);
+            DatabaseMoq.Setup(x => x.LogData.UpdateLogInDatabaseAsync(It.IsAny<LogEntry>(), It.IsAny<NpgsqlConnection>())).Callback((LogEntry a, NpgsqlConnection b) => _tempstorageLog = a);
+            DatabaseMoq.Setup(x => x.LogData.AddLogToDatabaseAsync(It.IsAny<LogEntry>(),It.IsAny<int>(), It.IsAny<NpgsqlConnection>())).Callback((LogEntry a,int b, NpgsqlConnection c) => _tempstorageLog = a);
 
 
             var MapQuestMoq = new Mock<IMapQuestApiHelper>();
             
-            MapQuestMoq.Setup(x => x.getMapImage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<string>("doesNotExist.jpg_123456789"));
-            MapQuestMoq.Setup(x => x.getRoute(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<List<CustomManeuvers>>(new List<CustomManeuvers>()));
+            MapQuestMoq.Setup(x => x.GetMapImageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<string>("doesNotExist.jpg_123456789"));
+            MapQuestMoq.Setup(x => x.GetRouteAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<List<CustomManeuvers>>(new List<CustomManeuvers>()));
 
             
-            var ImportExportHelper = new Mock<IImportExporthelper>();
+            var ImportExportHelper = new Mock<IFileSystemAccess>();
             List<LogsAndTours> tempList = new List<LogsAndTours>() { new LogsAndTours() { Tour = tour, Logs = new List<LogEntry>() } };
-            ImportExportHelper.Setup(x => x.SaveToFile(It.IsAny<string>(), It.IsAny<string>())).Callback((string a, string b) => _tempstringstorage = b);
-            ImportExportHelper.Setup(x => x.ImportFromJsonFile(It.IsAny<string>())).Returns("[{\"Tour\":{\"Maneuvers\":[],\"Too\":\"berlin\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]");
+            ImportExportHelper.Setup(x => x.SaveToFileAsync(It.IsAny<string>(), It.IsAny<string>())).Callback((string a, string b) => _tempstringstorage = b);
+            ImportExportHelper.Setup(x => x.ImportFromJsonFileAsync(It.IsAny<string>())).Returns(Task.FromResult<string>("[{\"Tour\":{\"Maneuvers\":[],\"Too\":\"berlin\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]"));
 
-            _service = new Services(DatabaseMoq.Object, MapQuestMoq.Object, ImportExportHelper.Object, new DinkToPdfClass());
+            _service = new ServicesAccess(DatabaseMoq.Object, MapQuestMoq.Object, ImportExportHelper.Object, new DinkToPdfClass());
         }
         [Test]
         public void SearchAndFindOneItemInTour()
         {
             List<LogsAndTours> result;
 
-            result = _service.Search(listLogsAndTours, "berlin");
+            result = _service.SearchAsync(listLogsAndTours, "berlin");
 
             Assert.Contains(logsAndTour1, result);
         }
@@ -127,7 +127,7 @@ namespace Unit_Tests
         {
             List<LogsAndTours> result;
 
-            result = _service.Search(listLogsAndTours, "no traffic");
+            result = _service.SearchAsync(listLogsAndTours, "no traffic");
 
             Assert.Contains(logsAndTour2, result);
         }
@@ -136,7 +136,7 @@ namespace Unit_Tests
         {
             List<LogsAndTours> result;
 
-            result = _service.Search(listLogsAndTours, "hans");
+            result = _service.SearchAsync(listLogsAndTours, "hans");
 
             Assert.IsEmpty(result);
         }
@@ -145,7 +145,7 @@ namespace Unit_Tests
         {
             List<LogsAndTours> result;
 
-            result = _service.Search(listLogsAndTours, "hamburg");
+            result = _service.SearchAsync(listLogsAndTours, "hamburg");
 
             Assert.AreEqual(2,result.Count);
             Assert.Contains(logsAndTour2, result);
@@ -237,7 +237,7 @@ namespace Unit_Tests
         public void TourUnchangedAfterBusinessLogikAdd()
         {
             SetupServicesDbMocBasic();
-            _ = _service.AddNewTour("test", "wien", "berlin", "aaaaa").Result;
+            _ = _service.AddNewTourAsync("test", "wien", "berlin", "aaaaa").Result;
 
 
             Assert.AreEqual("test", _tempstorageEntry.Title);
@@ -250,7 +250,7 @@ namespace Unit_Tests
         public void  TourUnchangedAfterBusinessLogikUpdate()
         {
             SetupServicesDbMocBasic();
-            _ = _service.UpdateTour(0, "test", "aaaaa", "wien", "berlin", "abc").Result;
+            _ = _service.UpdateTourAsync(0, "test", "aaaaa", "wien", "berlin", "abc").Result;
 
 
             Assert.AreEqual("test", _tempstorageEntry.Title);
@@ -264,7 +264,7 @@ namespace Unit_Tests
         public void LogUnchangedAfterBusinessLogikAdd()
         {
             SetupServicesDbMocBasic();
-            _ = _service.AddNewLog(log);
+            _ = _service.AddNewLogAsync(log);
 
             Assert.AreEqual(0, _tempstorageLog.LogID);
             Assert.AreEqual(0, _tempstorageLog.TourID);
@@ -283,7 +283,7 @@ namespace Unit_Tests
         public void LogUnchangedAfterBusinessLogikAddwithId()
         {
             SetupServicesDbMocBasic();
-            _ = _service.UpdateLog(log);
+            _ = _service.UpdateLogAsync(log);
 
             Assert.AreEqual(0, _tempstorageLog.LogID);
             Assert.AreEqual(0, _tempstorageLog.TourID);
@@ -329,7 +329,7 @@ namespace Unit_Tests
         {
             SetupServicesDbMocBasic();
 
-            _ = _service.ImportFile("a").Result;
+            _ = _service.ImportFileAsync("a").Result;
 
             Assert.AreEqual("wien berlin", _tempstorageEntry.Title);
             Assert.AreEqual("vienna", _tempstorageEntry.From);
@@ -341,7 +341,7 @@ namespace Unit_Tests
         {
             SetupServicesDbMocBasic();
             List<LogsAndTours> tempList2 = new List<LogsAndTours>() { new LogsAndTours() { Tour = tour, Logs = new List<LogEntry>() } };
-            _ = _service.ExportFile("a", tempList2);
+            _ = _service.ExportFileAsync("a", tempList2);
             Console.WriteLine(_tempstringstorage);
             Assert.AreEqual("[{\"Tour\":{\"Maneuvers\":[],\"Too\":\"berlin\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]", _tempstringstorage);
         }

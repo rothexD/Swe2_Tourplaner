@@ -1,16 +1,13 @@
-﻿using Npgsql;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
+using Swe2_tour_planer.Models;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using Swe2_tour_planer.Model;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
-namespace Swe2_tour_planer.helpers
+namespace Swe2_tour_planer.Services
 {
-    public class DatabaseHelper : IDatabaseHelper
+    public class Database : IDatabase
     {
         private static readonly IConfiguration config = new ConfigurationBuilder().AddJsonFile("Appsettings.json", false, true).Build();
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -37,14 +34,14 @@ namespace Swe2_tour_planer.helpers
                 return _tourData;
             }
         }
-        public DatabaseHelper(bool ShouldDoTableExistsCheck = false)
+        public Database(bool ShouldDoTableExistsCheck = false)
         {
             if (ShouldDoTableExistsCheck)
             {
-                this.initialSetupTableExists();
+                this.InitialSetupTableExists();
             }
         }
-        public async void initialSetupTableExists()
+        public async void InitialSetupTableExists()
         {
             try
             {
@@ -83,15 +80,16 @@ namespace Swe2_tour_planer.helpers
                 }
                 conn.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                log.Error("failure in initialSetupTableExists");
-                throw e;
+                log.Fatal("failure in initialSetupTableExists");
+                log.Debug(e.StackTrace);
+                Environment.Exit(1);
             }
         }
-        
-        
-        public async Task<ObservableCollection<TourEntry>> GetListOfTours()
+
+
+        public async Task<ObservableCollection<TourEntry>> GetListOfToursAsync()
         {
             try
             {
@@ -115,50 +113,53 @@ namespace Swe2_tour_planer.helpers
                     log.Debug("get List of tours success");
                     conn.Close();
                     return TourList;
-                   
-                }              
+
+                }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("get List of tours failed");
+                log.Debug(e.StackTrace); 
                 throw e;
-            }        
+            }
         }
-        public async Task<ObservableCollection<LogEntry>> GetListOfLogs(int TourID)
+        public async Task<ObservableCollection<LogEntry>> GetListOfLogsAsync(int TourID)
         {
-            try { 
-            string querystring = @$"Select * from LogEntry where tourID_fk = @tourID";
-            var conn = Create();
-            using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
+            try
             {
+                string querystring = @$"Select * from LogEntry where tourID_fk = @tourID";
+                var conn = Create();
+                using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
+                {
                     command.Parameters.AddWithValue("tourID", TourID);
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                ObservableCollection<LogEntry> TourList = new ObservableCollection<LogEntry>();
+                    NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                    ObservableCollection<LogEntry> TourList = new ObservableCollection<LogEntry>();
 
-                if (reader.HasRows == false)
-                {
-                    return TourList;
-                }
+                    if (reader.HasRows == false)
+                    {
+                        return TourList;
+                    }
 
-                while (reader.Read())
-                {
-                    var item = new LogEntry(Int32.Parse(reader[0].ToString()), Int32.Parse(reader[1].ToString()), Convert.ToDateTime(reader[2].ToString()), reader[3].ToString(),
-                        reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
-                    TourList.Add(item);
-                }
+                    while (reader.Read())
+                    {
+                        var item = new LogEntry(Int32.Parse(reader[0].ToString()), Int32.Parse(reader[1].ToString()), Convert.ToDateTime(reader[2].ToString()), reader[3].ToString(),
+                            reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
+                        TourList.Add(item);
+                    }
                     reader.Close();
                     conn.Close();
                     return TourList;
-            }
+                }
             }
             catch (Exception e)
             {
                 log.Error("get List of Logs failed");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }
 
-        public async Task<int> RemoveTour(int ID)
+        public async Task<int> RemoveTourAsync(int ID)
         {
             try
             {
@@ -175,11 +176,12 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Removing of Tour failed");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }
 
-        public async Task<int> RemoveLog(int ID)
+        public async Task<int> RemoveLogAsync(int ID)
         {
             try
             {
@@ -197,10 +199,11 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Remove of Log failed");
+                log.Debug(e.StackTrace);
                 throw e;
             }
         }
-        public async Task<int> RemoveAllTour()
+        public async Task<int> RemoveAllTourAsync()
         {
             try
             {
@@ -216,11 +219,12 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Removing of All Tour failed");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }
 
-        public async Task<int> RemoveAllLog()
+        public async Task<int> RemoveAllLogAsync()
         {
             try
             {
@@ -237,6 +241,7 @@ namespace Swe2_tour_planer.helpers
             catch (Exception e)
             {
                 log.Error("Remove of All Log failed");
+                log.Debug(e.StackTrace); 
                 throw e;
             }
         }

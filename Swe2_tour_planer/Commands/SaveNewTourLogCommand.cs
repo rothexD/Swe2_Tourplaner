@@ -1,11 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows.Input;
-using Swe2_tour_planer.ViewModels;
-using Swe2_tour_planer.Model;
-using Swe2_tour_planer.helpers;
-using Swe2_tour_planer.Logik;
+﻿using Swe2_tour_planer.Models;
+using Swe2_tour_planer.Services;
 using Swe2_tour_planer.Validation;
+using Swe2_tour_planer.ViewModels;
+using System;
+using System.Windows.Input;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -13,11 +11,11 @@ namespace Swe2_tour_planer.Commands
     {
         private readonly AddLogEntryViewModel _AddlogViewModel;
         private readonly HomeViewModel _HomeViewModel;
-        private Services _service;
+        private ServicesAccess _service;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public event EventHandler? CanExecuteChanged;
         private readonly AlphaNumvericValidation validator = new AlphaNumvericValidation();
-        public SaveNewTourLogCommand(AddLogEntryViewModel AddLogViewModel,HomeViewModel home,Services service)
+        public SaveNewTourLogCommand(AddLogEntryViewModel AddLogViewModel, HomeViewModel home, ServicesAccess service)
         {
 
             this._AddlogViewModel = AddLogViewModel;
@@ -75,8 +73,8 @@ namespace Swe2_tour_planer.Commands
                 if (args.PropertyName == "CurrentActiveTour")
                 {
                     CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                }               
-           };
+                }
+            };
         }
 
         public bool CanExecute(object? parameter)
@@ -85,7 +83,7 @@ namespace Swe2_tour_planer.Commands
             {
                 return false;
             }
-            if (!validator.Validate(_AddlogViewModel.Duration,null).IsValid)
+            if (!validator.Validate(_AddlogViewModel.Duration, null).IsValid)
             {
                 return false;
             }
@@ -145,14 +143,14 @@ namespace Swe2_tour_planer.Commands
                     _AddlogViewModel.NicenessOfLocals
                     );
 
-                await _service.AddNewLog(Log);
+                await _service.AddNewLogAsync(Log);
 
 
 
                 _AddlogViewModel.Statuscolor = "Green";
                 _AddlogViewModel.Statusmessage = "";
                 _AddlogViewModel.Date = new DateTime();
-                    _AddlogViewModel.Duration = "";
+                _AddlogViewModel.Duration = "";
                 _AddlogViewModel.Distance = "";
                 _AddlogViewModel.Rating = "";
                 _AddlogViewModel.Report = "";

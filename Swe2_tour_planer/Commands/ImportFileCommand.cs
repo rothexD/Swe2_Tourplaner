@@ -1,17 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows.Input;
+﻿using Microsoft.Win32;
+using Swe2_tour_planer.Services;
 using Swe2_tour_planer.ViewModels;
-using System.IO;
-using Swe2_tour_planer.helpers;
-using Swe2_tour_planer.Model;
-using System.Collections.Generic;
 using System;
-using System.IO;
-using System.Windows;
-using Microsoft.Win32;
-using Newtonsoft.Json;
-using Swe2_tour_planer.Logik;
+using System.Windows.Input;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -19,9 +10,9 @@ namespace Swe2_tour_planer.Commands
     {
         private readonly HomeViewModel _homeViewModel;
         public event EventHandler? CanExecuteChanged;
-        private Services _services;
+        private ServicesAccess _services;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public ImportFileCommand(HomeViewModel home,Services services)
+        public ImportFileCommand(HomeViewModel home, ServicesAccess services)
         {
 
             this._homeViewModel = home;
@@ -45,17 +36,17 @@ namespace Swe2_tour_planer.Commands
                 };
                 if (openFileDialog.ShowDialog() == true)
                 {
-                     await _services.ImportFile(openFileDialog.FileName);
+                    await _services.ImportFileAsync(openFileDialog.FileName);
                 }
                 _homeViewModel.OnPropertyChanged("ListTourEntryRefresh");
-                log.Info("import from file success");               
-            }         
-            catch(Exception e)
+                log.Info("import from file success");
+            }
+            catch (Exception e)
             {
                 log.Error("Could not import file");
                 log.Debug(e.Message);
                 return;
-            }       
+            }
         }
     }
 }

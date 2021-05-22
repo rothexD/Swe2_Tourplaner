@@ -96,8 +96,8 @@
                         </TabItem>
                         <TabItem Header="Description">
                             <Grid Background="#FFE5E5E5">
-                                <ScrollViewer VerticalScrollBarVisibility="Visible" Height="167">
-                                    <TextBlock Text="{Binding CurrentActiveTour.Description}" TextWrapping="Wrap" Margin="5,5,5,5"/>
+                                <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,10,0,10">
+                                    <TextBlock Text="{Binding CurrentActiveTour.Description}" TextWrapping="Wrap" Margin="5,5,5,5" Height="405"/>
                                 </ScrollViewer>
                             </Grid>
                         </TabItem>

@@ -1,18 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows.Input;
+﻿using Microsoft.Win32;
+using Swe2_tour_planer.Services;
 using Swe2_tour_planer.ViewModels;
-using System.IO;
-using Swe2_tour_planer.helpers;
-using Swe2_tour_planer.Model;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using System;
-using System.IO;
-using System.Windows;
-using Microsoft.Win32;
 using System.Linq;
-using Swe2_tour_planer.Logik;
+using System.Windows.Input;
 
 namespace Swe2_tour_planer.Commands
 {
@@ -20,10 +11,10 @@ namespace Swe2_tour_planer.Commands
     {
         private readonly HomeViewModel _homeViewModel;
         public event EventHandler? CanExecuteChanged;
-        private Services _services;
+        private ServicesAccess _services;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ExportFileCommandAll(HomeViewModel homeViewModel,Services services)
+        public ExportFileCommandAll(HomeViewModel homeViewModel, ServicesAccess services)
         {
 
             this._homeViewModel = homeViewModel;
@@ -39,22 +30,22 @@ namespace Swe2_tour_planer.Commands
         {
             try
             {
-                
+
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.DefaultExt = "json";
                 saveFileDialog.Filter = "JavaScript Object Notation | *.json |Text Message | *.txt";
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    await this._services.ExportFile(saveFileDialog.FileName, _homeViewModel.ListLogsAndTours.ToList());
-                }                
+                    await this._services.ExportFileAsync(saveFileDialog.FileName, _homeViewModel.ListLogsAndTours.ToList());
+                }
                 log.Info("Export of file success");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("Export of file failed");
                 log.Debug(e.Message);
             }
-           
+
         }
     }
 }

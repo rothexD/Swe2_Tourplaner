@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System;
-namespace Swe2_tour_planer.Model
+namespace Swe2_tour_planer.Models
 {
     public class LogEntry : INotifyPropertyChanged
     {
@@ -23,7 +23,7 @@ namespace Swe2_tour_planer.Model
         private int _logID { get; set; }
         private int _tourID_fk { get; set; }
 
-        public LogEntry(int logID,int tourID, DateTime date, string duration, string distance, string rating, string report, string averageSpeed, string energyUsed, string wheater, string traffic, string nicenessOfLocals)
+        public LogEntry(int logID, int tourID, DateTime date, string duration, string distance, string rating, string report, string averageSpeed, string energyUsed, string wheater, string traffic, string nicenessOfLocals)
         {
             _logID = logID;
             Date = date;

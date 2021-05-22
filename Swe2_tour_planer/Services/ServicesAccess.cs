@@ -1,30 +1,28 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Swe2_tour_planer.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Swe2_tour_planer.helpers;
-using Swe2_tour_planer.Model;
 
-namespace Swe2_tour_planer.Logik
+namespace Swe2_tour_planer.Services
 {
-    public class Services
+    public class ServicesAccess : IServiceAccess
     {
-        private readonly IDatabaseHelper _database = new DatabaseHelper(true);
-        private readonly IMapQuestApiHelper _mapQuest = new MapQuestApiHelper();
-        private readonly IImportExporthelper _importerExporter = new ImportExporthelper();
-        private readonly IDinkToPdfClass _pdfCreater = new DinkToPdfClass();
+        private readonly IDatabase _database;
+        private readonly IMapQuestApiHelper _mapQuest;
+        private readonly IFileSystemAccess _fileSystemAccess;
+        private readonly IDinkToPdfClass _pdfCreater;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly IConfiguration config = new ConfigurationBuilder().AddJsonFile("Appsettings.json", false, true).Build();
 
-        public Services(IDatabaseHelper database, IMapQuestApiHelper mapQuest, IImportExporthelper importExporter, IDinkToPdfClass dinkToPdf)
+        public ServicesAccess(IDatabase database, IMapQuestApiHelper mapQuest, IFileSystemAccess fileSystemAccess, IDinkToPdfClass dinkToPdf)
         {
             this._database = database;
             this._mapQuest = mapQuest;
-            this._importerExporter = importExporter;
+            this._fileSystemAccess = fileSystemAccess;
             this._pdfCreater = dinkToPdf;
         }
         private async Task<bool> ForeachLogAndToursToDatabase(List<LogsAndTours> list)
@@ -36,175 +34,175 @@ namespace Swe2_tour_planer.Logik
                     log.Debug(item.Tour.From);
                     log.Debug(item.Tour.Too);
 
-                    string imageLoc = await _mapQuest.getMapImage(item.Tour.From, item.Tour.Too);
+                    string imageLoc = await _mapQuest.GetMapImageAsync(item.Tour.From, item.Tour.Too);
                     item.Tour.ImgSource = imageLoc;
                     log.Debug("try import to database");
                     int id = 0;
-                    id = await _database.TourData.AddTourToDatabase(item.Tour, _database.Create());
+                    id = await _database.TourData.AddTourToDatabaseAsync(item.Tour, _database.Create());
                     foreach (var log in item.Logs)
                     {
-                        await _database.LogData.AddLogToDatabase(log,id, _database.Create());
+                        await _database.LogData.AddLogToDatabaseAsync(log, id, _database.Create());
                     }
                 }
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 log.Error("Error in foreachLogAndTourToDatabase");
-                log.Debug(e.StackTrace);
                 log.Debug(e.Message);
+                throw e;
             }
             return true;
         }
-        public void PrintReport(string path,LogsAndTours item)
+        public void PrintReport(string path, LogsAndTours item)
         {
             try
             {
                 string page = _pdfCreater.TourAndLogToHtml(item.Tour, item.Logs);
                 _pdfCreater.CreatePDFFromHtml(page, path);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                log.Error("could not export file");
+                log.Error("could not export File");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
+                throw new Exception();
             }
 
         }
-        public async Task<bool> RemoveLog(int id)
+        public async Task<bool> RemoveLogAsync(int id)
         {
             try
             {
-                await _database.RemoveLog(id);
+                await _database.RemoveLogAsync(id);
                 return true;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 log.Error("Error in deleting Log");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
                 throw new Exception();
             }
         }
-        public async Task<bool> ImportFile(string path)
+        public async Task<bool> ImportFileAsync(string path)
         {
             try
             {
-                string text = _importerExporter.ImportFromJsonFile(path);
+                string text = await _fileSystemAccess.ImportFromJsonFileAsync(path);
                 log.Debug(text);
                 List<LogsAndTours> list = JsonConvert.DeserializeObject<List<LogsAndTours>>(text);
                 await ForeachLogAndToursToDatabase(list);
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error(e);
                 throw new Exception();
             }
         }
 
-        public async Task<bool> ExportFile(string path,List<LogsAndTours> listLogsAndTours)
+        public async Task<bool> ExportFileAsync(string path, List<LogsAndTours> listLogsAndTours)
         {
             try
             {
                 string output = JsonConvert.SerializeObject(listLogsAndTours);
-                await _importerExporter.SaveToFile(path, output);
+                await _fileSystemAccess.SaveToFileAsync(path, output);
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("Error appeard in Export file all");
                 log.Debug(e);
                 throw new Exception();
             }
         }
-        public async Task<bool> RemoveTour(LogsAndTours tourAndLogs,int id)
+        public async Task<bool> RemoveTourAsync(LogsAndTours tourAndLogs, int id)
         {
             try
             {
-                await _database.RemoveTour(id);
-                if (File.Exists(config["MapQuest:Location"] + tourAndLogs.Tour.ImgSource))
-                {
-                    File.Delete(config["MapQuest:Location"] + tourAndLogs.Tour.ImgSource);
-                }
+                await _database.RemoveTourAsync(id);
+                _fileSystemAccess.RemoveFileFromFileSystem(config["MapQuest:Location"] + tourAndLogs.Tour.ImgSource);
+
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("failed to remove Tour");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
                 throw new Exception();
             }
         }
-        public async Task<int> AddNewTour(string title,string from,string too,string description)
+        public async Task<int> AddNewTourAsync(string title, string from, string too, string description)
         {
             try
             {
                 log.Debug(from + " " + too);
-                var route = await _mapQuest.getRoute(from, too);
-                var location = await _mapQuest.getMapImage(from, too);
+                var route = await _mapQuest.GetRouteAsync(from, too);
+                var location = await _mapQuest.GetMapImageAsync(from, too);
 
                 var Tour = new TourEntry(0, title, description, location, from, too, JsonConvert.SerializeObject(route));
-                var a = await _database.TourData.AddTourToDatabase(Tour, _database.Create());
+                var a = await _database.TourData.AddTourToDatabaseAsync(Tour, _database.Create());
                 return a;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.Error("failed to add new Tour");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
                 throw new Exception();
             }
         }
-        public async Task<int> AddNewLog(LogEntry logEntry)
+        public async Task<int> AddNewLogAsync(LogEntry logEntry)
         {
             try
             {
-                return await _database.LogData.AddLogToDatabase(logEntry, _database.Create());
-            }
-            catch(Exception e)
-            {
-                log.Error("failed to add new Log");
-                log.Debug(e.Message);
-                log.Debug(e.StackTrace);
-                throw new Exception();
-            }
-        }
-        public async Task<int> UpdateLog(LogEntry logEntry)
-        {
-            try
-            {
-                return await _database.LogData.UpdateLogInDatabase(logEntry, _database.Create());
+                return await _database.LogData.AddLogToDatabaseAsync(logEntry, _database.Create());
             }
             catch (Exception e)
             {
                 log.Error("failed to add new Log");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
                 throw new Exception();
             }
         }
-        public async Task<TourEntry> UpdateTour(int id, string title,string description,string from,string too, string imagePathBefore)
+        public async Task<int> UpdateLogAsync(LogEntry logEntry)
         {
             try
             {
-                var Route = await _mapQuest.getRoute(from, too);
-                var Location = await _mapQuest.getMapImage(from, too);
+                return await _database.LogData.UpdateLogInDatabaseAsync(logEntry, _database.Create());
+            }
+            catch (Exception e)
+            {
+                log.Error("failed to add new Log");
+                log.Debug(e.Message);
+                
+                throw new Exception();
+            }
+        }
+        public async Task<TourEntry> UpdateTourAsync(int id, string title, string description, string from, string too, string imagePathBefore)
+        {
+            try
+            {
+                var Route = await _mapQuest.GetRouteAsync(from, too);
+                var Location = await _mapQuest.GetMapImageAsync(from, too);
 
-                if (File.Exists(imagePathBefore))
-                {
-                    File.Delete(imagePathBefore);
-                }
+                _fileSystemAccess.RemoveFileFromFileSystem(imagePathBefore);
+                
                 var Tour = new TourEntry(id, title, description, Location, from, too, Route);
-                await _database.TourData.UpdateTourInDatabase(Tour, _database.Create());
+                await _database.TourData.UpdateTourInDatabaseAsync(Tour, _database.Create());
                 return Tour;
-           }
+            }
             catch (Exception e)
             {
                 log.Error("failed TO UpdateTour");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
                 throw new Exception();
             }
         }
-        public List<LogsAndTours> Search(List<LogsAndTours> list,string searchbar)
+        public List<LogsAndTours> SearchAsync(List<LogsAndTours> list, string searchbar)
         {
             try
             {
@@ -219,7 +217,7 @@ namespace Swe2_tour_planer.Logik
                     x.Logs.ForEach(y =>
                     {
                         if (inLogs) { return; }
-                        if (y.Date.ToString().Contains(searchbar)){ inLogs = true; }
+                        if (y.Date.ToString().Contains(searchbar)) { inLogs = true; }
                         if (y.Duration.Contains(searchbar)) { inLogs = true; }
                         if (y.Distance.Contains(searchbar)) { inLogs = true; }
                         if (y.Rating.Contains(searchbar)) { inLogs = true; }
@@ -240,19 +238,19 @@ namespace Swe2_tour_planer.Logik
             {
                 log.Error("failed TO Search");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
                 return new List<LogsAndTours>();
             }
         }
-        public async Task<List<LogsAndTours>> ListLogsAndTours()
+        public async Task<List<LogsAndTours>> ListLogsAndToursAsync()
         {
             try
             {
-                var allTours = await _database.GetListOfTours();
+                var allTours = await _database.GetListOfToursAsync();
                 List<LogsAndTours> logsAndTours = new List<LogsAndTours>();
                 foreach (var TourFromList in allTours)
                 {
-                    var logs = await _database.GetListOfLogs(TourFromList.TourID);
+                    var logs = await _database.GetListOfLogsAsync(TourFromList.TourID);
                     List<LogEntry> logList = new List<LogEntry>();
                     foreach (var log in logs)
                     {
@@ -270,43 +268,38 @@ namespace Swe2_tour_planer.Logik
             {
                 log.Error("failed TO get list of logs and tours");
                 log.Debug(e.Message);
-                log.Debug(e.StackTrace);
+                
                 return new List<LogsAndTours>();
             }
         }
         public byte[] ImageBytes(string path)
-        {
-            if(path == null)
+        {          
+            if (path == null)
             {
                 return Array.Empty<byte>();
             }
-            if (File.Exists(path))
+            byte[] result = _fileSystemAccess.ifFilExistReadAllBytes(path);
+            if(result.Length == 0)
             {
-                return File.ReadAllBytes(path);
+                result = _fileSystemAccess.ifFilExistReadAllBytes("default.jpg");
             }
-            else if(File.Exists("default.jpg"))
-            {
-                return File.ReadAllBytes("default.jpg");
-            }
-            else
-            {
-                return Array.Empty<byte>();
-            }           
+            return result;
         }
-        public List<LogEntry> CurrentActiveLogs(List<LogsAndTours> listLogsAndTours,TourEntry currentActiveTour)
+        public List<LogEntry> CurrentActiveLogs(List<LogsAndTours> listLogsAndTours, TourEntry currentActiveTour)
         {
-            return listLogsAndTours.ToList().Find(x => {
+            return listLogsAndTours.ToList().Find(x =>
+            {
                 if (x != null)
                 {
                     var z = currentActiveTour == null ? -1 : currentActiveTour.TourID;
                     return x.Tour.TourID == z;
                 }
                 else { return false; }
-            }) != null ? listLogsAndTours.ToList().Find(x => {
+            }) != null ? listLogsAndTours.ToList().Find(x =>
+            {
                 var z = currentActiveTour == null ? -1 : currentActiveTour.TourID;
                 return x.Tour.TourID == z;
             }).Logs : new List<LogEntry>();
         }
-
     }
 }

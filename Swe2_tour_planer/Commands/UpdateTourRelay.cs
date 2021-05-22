@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Swe2_tour_planer.ViewModels;
+using System;
 using System.Linq;
 using System.Windows.Input;
-using Swe2_tour_planer.ViewModels;
 
 
 namespace Swe2_tour_planer.Commands
