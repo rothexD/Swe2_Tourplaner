@@ -20,7 +20,7 @@ namespace Swe2_tour_planer.Services
         public  Task<int> AddNewTourAsync(string title, string from, string too, string description);
         public  Task<int> AddNewLogAsync(LogEntry logEntry);
         public  Task<int> UpdateLogAsync(LogEntry logEntry);
-        public  Task<TourEntry> UpdateTourAsync(int id, string title, string description, string from, string too, string imagePathBefore);
+        public  Task<TourEntry> UpdateTourAsync(int id, string title, string description, string from, string too, TourEntry TourBeforeChanges);
         public List<LogsAndTours> SearchAsync(List<LogsAndTours> list, string searchbar);
         public Task<List<LogsAndTours>> ListLogsAndToursAsync();
         public byte[] ImageBytes(string path);
