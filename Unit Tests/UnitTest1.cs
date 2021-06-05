@@ -9,6 +9,9 @@ using Npgsql;
 using System.Threading.Tasks;
 using System.IO;
 using static Swe2_tour_planer.Models.MapQuestJson;
+using Swe2_tour_planer.Validation;
+using System.Windows.Controls;
+using System.Globalization;
 
 namespace Unit_Tests
 {
@@ -237,6 +240,7 @@ namespace Unit_Tests
         public void TourUnchangedAfterBusinessLogikAdd()
         {
             SetupServicesDbMocBasic();
+
             _ = _service.AddNewTourAsync("test", "wien", "berlin", "aaaaa").Result;
 
 
@@ -341,9 +345,53 @@ namespace Unit_Tests
         {
             SetupServicesDbMocBasic();
             List<LogsAndTours> tempList2 = new List<LogsAndTours>() { new LogsAndTours() { Tour = tour, Logs = new List<LogEntry>() } };
+
             _ = _service.ExportFileAsync("a", tempList2);
+
             Console.WriteLine(_tempstringstorage);
             Assert.AreEqual("[{\"Tour\":{\"Maneuvers\":[],\"Too\":\"berlin\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]", _tempstringstorage);
+        }
+
+
+        [Test]
+        public void ValidateSuccess()
+        {
+            var validator = new AlphaNumvericValidation();
+            ValidationResult result;
+
+            result = validator.Validate("123", CultureInfo.CreateSpecificCulture("de"));
+
+            Assert.IsTrue(result.IsValid);
+        }
+        [Test]
+        public void ValidateFail()
+        {
+            var validator = new AlphaNumvericValidation();
+            ValidationResult result;
+
+            result = validator.Validate("AA", CultureInfo.CreateSpecificCulture("de"));
+
+            Assert.IsFalse(result.IsValid);
+        }
+        [Test]
+        public void ValidateFailNumbersAndLetters()
+        {
+            var validator = new AlphaNumvericValidation();
+            ValidationResult result;
+
+            result = validator.Validate("hallo123", CultureInfo.CreateSpecificCulture("de"));
+
+            Assert.IsFalse(result.IsValid);
+        }
+
+        [Test]
+        public void ValidateSuccessNumbersAndDot()
+        {
+            var validator = new AlphaNumvericValidation();
+            ValidationResult result;
+
+            result = validator.Validate("1.123", CultureInfo.CreateSpecificCulture("de"));
+            Assert.IsTrue(result.IsValid);
         }
     }
 }
