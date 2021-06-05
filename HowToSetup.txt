@@ -1,0 +1,13 @@
+needs folder: pic in output directory
+
+needs appsettings.json in form:
+
+{
+  "MapQuest": {
+    "Key": "",
+    "Location": "" #of pic folder
+  },
+  "Database": {
+    "ConnectionString": ""
+  }
+}
