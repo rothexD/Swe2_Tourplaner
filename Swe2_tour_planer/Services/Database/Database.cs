@@ -120,7 +120,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("get List of tours failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
         public async Task<ObservableCollection<LogEntry>> GetListOfLogsAsync(int TourID)
@@ -155,7 +155,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("get List of Logs failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
 
@@ -177,7 +177,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Removing of Tour failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
 
@@ -200,7 +200,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Remove of Log failed");
                 log.Debug(e.StackTrace);
-                throw e;
+                throw;
             }
         }
         public async Task<int> RemoveAllTourAsync()
@@ -220,7 +220,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Removing of All Tour failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
 
@@ -242,7 +242,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Remove of All Log failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
     }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Swe2_tour_planer.CustomExceptions;
 
 namespace Swe2_tour_planer.Services
 {
@@ -49,7 +50,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Error in foreachLogAndTourToDatabase");
                 log.Debug(e.Message);
-                throw e;
+                throw;
             }
             return true;
         }
@@ -62,10 +63,10 @@ namespace Swe2_tour_planer.Services
             }
             catch (Exception e)
             {
-                log.Error("could not export File");
+                log.Error("could not print report");
                 log.Debug(e.Message);
                 
-                throw new Exception();
+                throw new ServiceAccessLayerException("error in reporting");
             }
 
         }
@@ -81,7 +82,7 @@ namespace Swe2_tour_planer.Services
                 log.Error("Error in deleting Log");
                 log.Debug(e.Message);
                 
-                throw new Exception();
+                throw new ServiceAccessLayerException("Could not RemoveLog");
             }
         }
         public async Task<bool> ImportFileAsync(string path)
@@ -97,7 +98,7 @@ namespace Swe2_tour_planer.Services
             catch (Exception e)
             {
                 log.Error(e);
-                throw new Exception();
+                throw new ServiceAccessLayerException("Could not Import from file");
             }
         }
 
@@ -113,7 +114,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Error appeard in Export file all");
                 log.Debug(e);
-                throw new Exception();
+                throw new ServiceAccessLayerException("Exporting of file failed");
             }
         }
         public async Task<bool> RemoveTourAsync(LogsAndTours tourAndLogs, int id)
@@ -129,8 +130,8 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("failed to remove Tour");
                 log.Debug(e.Message);
-                
-                throw new Exception();
+
+                throw new ServiceAccessLayerException("Removing of Tour failed");
             }
         }
         public async Task<int> AddNewTourAsync(string title, string from, string too, string description)
@@ -149,8 +150,8 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("failed to add new Tour");
                 log.Debug(e.Message);
-                
-                throw new Exception();
+
+                throw new ServiceAccessLayerException("Adding of new Tour failed");
             }
         }
         public async Task<int> AddNewLogAsync(LogEntry logEntry)
@@ -163,8 +164,8 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("failed to add new Log");
                 log.Debug(e.Message);
-                
-                throw new Exception();
+
+                throw new ServiceAccessLayerException("Adding of new Log failed");
             }
         }
         public async Task<int> UpdateLogAsync(LogEntry logEntry)
@@ -177,19 +178,28 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("failed to add new Log");
                 log.Debug(e.Message);
-                
-                throw new Exception();
+
+                throw new ServiceAccessLayerException("Upadting of Log failed");
             }
         }
-        public async Task<TourEntry> UpdateTourAsync(int id, string title, string description, string from, string too, string imagePathBefore)
+        public async Task<TourEntry> UpdateTourAsync(int id, string title, string description, string from, string too,TourEntry _TourbeforeChanges)
         {
             try
             {
-                var Route = await _mapQuest.GetRouteAsync(from, too);
-                var Location = await _mapQuest.GetMapImageAsync(from, too);
+                List<MapQuestJson.CustomManeuvers> Route = await _mapQuest.GetRouteAsync(from, too);         
+                string Location = await _mapQuest.GetMapImageAsync(from, too);
 
-                _fileSystemAccess.RemoveFileFromFileSystem(imagePathBefore);
-                
+                if(_TourbeforeChanges.From != from || _TourbeforeChanges.Too != too)
+                {
+                    Route = await _mapQuest.GetRouteAsync(from, too);
+                    Location = await _mapQuest.GetMapImageAsync(from, too);
+                    _fileSystemAccess.RemoveFileFromFileSystem(_TourbeforeChanges.ImgSource);
+                }
+                else
+                {
+                    Route = _TourbeforeChanges.Maneuvers.ToList();
+                    Location = _TourbeforeChanges.ImgSource;
+                }                          
                 var Tour = new TourEntry(id, title, description, Location, from, too, Route);
                 await _database.TourData.UpdateTourInDatabaseAsync(Tour, _database.Create());
                 return Tour;
@@ -198,8 +208,8 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("failed TO UpdateTour");
                 log.Debug(e.Message);
-                
-                throw new Exception();
+
+                throw new ServiceAccessLayerException("Adding of Tour failed");
             }
         }
         public List<LogsAndTours> SearchAsync(List<LogsAndTours> list, string searchbar)

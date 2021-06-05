@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using static Swe2_tour_planer.Models.MapQuestJson;
+using Swe2_tour_planer.CustomExceptions;
 
 namespace Swe2_tour_planer.Services
 {
@@ -44,7 +45,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("could not get image to route");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
         public async Task<List<CustomManeuvers>> GetRouteAsync(string from, string too)
@@ -64,7 +65,7 @@ namespace Swe2_tour_planer.Services
                     log.Error($"route not possible statuscode of mapquest api was: {Routedescription.Info.Statuscode.ToString()} with message: \"{Routedescription.Info.Messages}\"");
                     log.Debug(from);
                     log.Debug(too);
-                    throw new Exception($"route not possible statuscode of mapquest api was: {Routedescription.Info.Statuscode.ToString()} with message: \"{Routedescription.Info.Messages}\"");
+                    throw new MapQuestException($"route not possible statuscode of mapquest api was: {Routedescription.Info.Statuscode.ToString()} with message: \"{Routedescription.Info.Messages}\"");
                 }
 
                 Routedescription.Route.Legs.ForEach(x =>
@@ -88,7 +89,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Exception occured in get Route\n");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
     }

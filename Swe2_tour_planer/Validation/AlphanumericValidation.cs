@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace Swe2_tour_planer.Validation
 {
-    class AlphaNumvericValidation : ValidationRule
+    public class AlphaNumvericValidation : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {

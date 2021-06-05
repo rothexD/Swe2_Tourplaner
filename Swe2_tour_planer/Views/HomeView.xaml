@@ -96,8 +96,17 @@
                         </TabItem>
                         <TabItem Header="Description">
                             <Grid Background="#FFE5E5E5">
-                                <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,10,0,10">
-                                    <TextBlock Text="{Binding CurrentActiveTour.Description}" TextWrapping="Wrap" Margin="5,5,5,5" Height="405"/>
+                                <TextBlock Height="20" FontSize="15" Margin="0,10,0,370">
+                                      <Run Text="From: "/>
+                                      <Run Text="{Binding CurrentActiveTour.From}"/>
+                                </TextBlock>
+                                <TextBlock Height="20" Margin="0,10,0,320" FontSize="15">
+                                      <Run Text="Too: "/>
+                                      <Run Text="{Binding CurrentActiveTour.Too}"/>
+                                </TextBlock>
+                                <Label FontSize="15" Margin="-5,53,0,0">Description:</Label>
+                                <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,20,0,10" FontSize="14">
+                                    <TextBlock Text="{Binding CurrentActiveTour.Description}" TextWrapping="Wrap" Margin="5,5,5,5" Height="250"/>
                                 </ScrollViewer>
                             </Grid>
                         </TabItem>

@@ -46,7 +46,7 @@ namespace Swe2_tour_planer.Services
                         {
                             log.Error("lastval failed");
                             log.Debug(e.StackTrace); 
-                            throw e;
+                            throw;
                         }
 
                     }
@@ -56,7 +56,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Adding of new Tour Failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
         public async Task<int> RemoveTourFromDatabaseAsync(TourEntry newEntry, NpgsqlConnection conn)
@@ -77,7 +77,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Removing of Tour failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
         public async Task<int> UpdateTourInDatabaseAsync(TourEntry updateEntry, NpgsqlConnection conn)
@@ -104,7 +104,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Update of Tour failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
 

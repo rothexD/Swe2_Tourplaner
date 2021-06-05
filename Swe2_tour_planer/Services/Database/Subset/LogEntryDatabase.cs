@@ -47,7 +47,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Database inserting new Log into db failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
         public async Task<int> AddLogToDatabaseAsync(LogEntry newEntry, int id, NpgsqlConnection conn)
@@ -89,7 +89,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Database inserting new Log into db failed");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
 
@@ -111,7 +111,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("Database Remove of Log failed");
                 log.Debug(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -153,7 +153,7 @@ namespace Swe2_tour_planer.Services
             catch (Exception e)
             {
                 log.Error("Database Update of Logs failed");
-                log.Debug(e.StackTrace); throw e;
+                log.Debug(e.StackTrace); throw;
             }*/
         }
     }

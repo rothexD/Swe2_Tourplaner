@@ -18,8 +18,8 @@ namespace Swe2_tour_planer.Services
             catch (Exception e)
             {
                 log.Error("could not save file");
-                log.Debug(e.StackTrace); 
-                throw e;
+                log.Debug(e.StackTrace);
+                throw;
             }
         }
         public async Task<string> ImportFromJsonFileAsync(string path)
@@ -31,8 +31,8 @@ namespace Swe2_tour_planer.Services
             catch (Exception e)
             {
                 log.Error("could not deserialize file");
-                log.Debug(e.StackTrace); 
-                throw e;
+                log.Debug(e.StackTrace);
+                throw;
             }
         }
         public bool RemoveFileFromFileSystem(string path)
@@ -50,7 +50,7 @@ namespace Swe2_tour_planer.Services
             {
                 log.Error("could not delete file");
                 log.Debug(e.StackTrace); 
-                throw e;
+                throw;
             }
         }
         public byte[] ifFilExistReadAllBytes(string path)
@@ -75,8 +75,8 @@ namespace Swe2_tour_planer.Services
             catch (Exception e)
             {
                 log.Error("could not delete file");
-                log.Debug(e.StackTrace); 
-                throw e;
+                log.Debug(e.StackTrace);
+                throw;
             }
 }
     }
