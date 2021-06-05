@@ -96,17 +96,23 @@
                         </TabItem>
                         <TabItem Header="Description">
                             <Grid Background="#FFE5E5E5">
-                                <TextBlock Height="20" FontSize="15" Margin="0,10,0,370">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="100"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Height="Auto" FontSize="15" Margin="0,20,0,0">
                                       <Run Text="From: "/>
                                       <Run Text="{Binding CurrentActiveTour.From}"/>
                                 </TextBlock>
-                                <TextBlock Height="20" Margin="0,10,0,320" FontSize="15">
+                                <TextBlock Grid.Row="0" Height="Auto" Margin="0,40,0,0" FontSize="15">
                                       <Run Text="Too: "/>
                                       <Run Text="{Binding CurrentActiveTour.Too}"/>
                                 </TextBlock>
-                                <Label FontSize="15" Margin="-5,53,0,0">Description:</Label>
-                                <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,20,0,10" FontSize="14">
-                                    <TextBlock Text="{Binding CurrentActiveTour.Description}" TextWrapping="Wrap" Margin="5,5,5,5" Height="250"/>
+                                <TextBlock Grid.Row="0" Height="Auto" Margin="0,60,0,0" FontSize="15">
+                                      <Run Text="Description: "/>
+                                </TextBlock>
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" Margin="0,0,0,0" FontSize="14">
+                                    <TextBlock Text="{Binding CurrentActiveTour.Description}" TextWrapping="Wrap" Margin="5,5,5,5" Height="Auto"/>
                                 </ScrollViewer>
                             </Grid>
                         </TabItem>
