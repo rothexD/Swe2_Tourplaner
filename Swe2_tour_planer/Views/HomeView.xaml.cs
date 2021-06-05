@@ -1,20 +1,17 @@
-﻿using Swe2_tour_planer.ViewModels;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Controls;
 
-
-namespace Swe2_tour_planer
+namespace Swe2_tour_planer.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaktionslogik für HomeView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class HomeView : UserControl
     {
-        public MainWindow()
+        public HomeView()
         {
-            DataContext = new MainViewModel();
             InitializeComponent();
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
@@ -26,6 +23,11 @@ namespace Swe2_tour_planer
         }
 
         private void TabControl_SelectionChanged()
+        {
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
 
         }

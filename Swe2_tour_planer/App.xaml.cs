@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
+[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 namespace Swe2_tour_planer
 {
     /// <summary>
@@ -13,5 +8,14 @@ namespace Swe2_tour_planer
     /// </summary>
     public partial class App : Application
     {
+        private void Grid_IsHitTestVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
+        }
+
+        private void Trigger_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

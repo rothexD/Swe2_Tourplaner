@@ -1,0 +1,161 @@
+﻿<UserControl x:Class="Swe2_tour_planer.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Swe2_tour_planer.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1200">
+    <Grid Margin="5" Background="#FFE5E5E5" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="130"/>
+            </Grid.ColumnDefinitions>
+            <Label   Grid.Column="0" Margin="21,0,65,0" VerticalAlignment="Top" Height="34" FontSize="17">Tour-Planner</Label>
+            <Button  Grid.Column="0"  Command="{Binding ImportCommand}" CommandParameter="ImportView" VerticalAlignment="Top" Height="30" Margin="10,39,0,0" HorizontalAlignment="Left" Width="67">Import File</Button>
+            <Button  VerticalAlignment="Top" Command="{Binding ExportCommandCurrent}" CommandParameter="ExportCurrent" Height="30" Margin="159,4,0,0" HorizontalAlignment="Left" Width="85">Export Current</Button>
+            <Button  VerticalAlignment="Top" Command="{Binding ExportCommandAll}" CommandParameter="ExportAll" Height="30" Margin="178,40,0,0" HorizontalAlignment="Left" Width="66" Content="Export All"/>
+            <Button  VerticalAlignment="Top" Command="{Binding ReportCommand}" CommandParameter="ReportCommand" Height="30" Margin="0,40,0,0" HorizontalAlignment="Center" Width="87">Create Report</Button>
+            <!--<Button  VerticalAlignment="Top" Height="26" Margin="80,0,0,0" Grid.Column="2">Help :c</Button>-->
+            <TextBox Grid.Column="1" Margin="7,39,8,0" Text="{Binding Searchbar,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" TextChanged="TextBox_TextChanged" />
+            <!--<Button  Grid.Column="2" Command="{Binding SearchbarCommand}"  VerticalAlignment="Top" Height="30"  Margin="5,39,5,0">Find-Me :)</Button>-->
+        </Grid>
+        <Grid Grid.Row="1" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Label   Grid.Column="0" Margin="70,0,40,0" VerticalAlignment="Center" Height="32" FontSize="15">Tours</Label>
+
+            <Grid Grid.Column="1">
+                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding CurrentActiveTour.Title}"  Height="32" FontSize="16"></Label>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <TabControl  Margin="5,5,5,5">
+                <TabItem Header="Tours">
+                    <Grid Background="#FFE5E5E5">
+                        <DataGrid ItemsSource="{Binding Data}" SelectedItem="{Binding Path=CurrentActiveTour, Mode=TwoWay}" AutoGenerateColumns="False" AlternatingRowBackground="LightGray" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HeadersVisibility="None">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="167"/>
+                                <!-- https://stackoverflow.com/questions/10892233/add-delete-button-for-every-row-in-datagrid-->
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Path=DataContext.UpdateTourRelay}" CommandParameter="{Binding TourID}">Edit</Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Path=DataContext.RemoveTourCommand}" CommandParameter="{Binding TourID}">-</Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+                <!-- Command="{Binding SwitchView}" CommandParameter="HomeView"  -->
+            </TabControl>
+            <Button VerticalAlignment="Top" Command="{Binding SwitchView}" CommandParameter="AddTourView"  Height="27" Margin="213,0,0,0" HorizontalAlignment="Left" Width="27">+</Button>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="61*"/>
+                        <ColumnDefinition Width="67*"/>
+                    </Grid.ColumnDefinitions>
+                    <TabControl  Margin="5,5,5,5" Grid.ColumnSpan="2">
+                        <TabItem Header="RouteInfo">
+                            <DataGrid ItemsSource="{Binding CurrentActiveTour.Maneuvers}" AutoGenerateColumns="False" AlternatingRowBackground="LightGray" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" VerticalScrollBarVisibility="Visible"  Width="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Narrative" Binding="{Binding Narrative}" Width="Auto"/>
+                                    <DataGridTextColumn  Header="Streets" Binding="{Binding StreetsAsString}" Width="Auto"/>
+                                    <DataGridTextColumn Header="DirectionName" Binding="{Binding DirectionName}" Width="Auto"/>
+                                    <DataGridTextColumn Header="DistanceInMiles" Binding="{Binding DistanceInKm}" Width="Auto"/>
+                                    <DataGridTextColumn  Header="Index" Binding="{Binding Index}" Width="Auto"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+                        <TabItem Header="Description">
+                            <Grid Background="#FFE5E5E5">
+                                <TextBlock Height="20" FontSize="15" Margin="0,10,0,370">
+                                      <Run Text="From: "/>
+                                      <Run Text="{Binding CurrentActiveTour.From}"/>
+                                </TextBlock>
+                                <TextBlock Height="20" Margin="0,10,0,320" FontSize="15">
+                                      <Run Text="Too: "/>
+                                      <Run Text="{Binding CurrentActiveTour.Too}"/>
+                                </TextBlock>
+                                <Label FontSize="15" Margin="-5,53,0,0">Description:</Label>
+                                <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,20,0,10" FontSize="14">
+                                    <TextBlock Text="{Binding CurrentActiveTour.Description}" TextWrapping="Wrap" Margin="5,5,5,5" Height="250"/>
+                                </ScrollViewer>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Image">
+                            <Grid Background="#FFE5E5E5">
+                                <Image HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="Auto" Grid.ColumnSpan="2" Source="{Binding ImgSourceWithLocation}">
+                                </Image>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Logs" Margin="0,-1,-4,-1">
+                            <DataGrid ItemsSource="{Binding CurrentActiveLogs}" AutoGenerateColumns="False" AlternatingRowBackground="LightGray" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" VerticalScrollBarVisibility="Visible"  Width="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='{}{0:dd/MM/yyyy}'}" Width="Auto"/>
+                                    <DataGridTextColumn  Header="Duration" Binding="{Binding Duration}" Width="Auto"/>
+                                    <DataGridTextColumn Header="Distance" Binding="{Binding Distance}" Width="Auto"/>
+                                    <DataGridTextColumn Header="Rating" Binding="{Binding Rating}" Width="Auto"/>
+                                    <DataGridTextColumn  Header="Report" Binding="{Binding Report}" Width="Auto"/>
+                                    <DataGridTextColumn Header="AverageSpeed" Binding="{Binding AverageSpeed}" Width="Auto"/>
+                                    <DataGridTextColumn  Header="EnergyUsed" Binding="{Binding EnergyUsed}" Width="Auto"/>
+                                    <DataGridTextColumn Header="Wheater" Binding="{Binding Wheater}" Width="Auto"/>
+                                    <DataGridTextColumn Header="Traffic" Binding="{Binding Traffic}" Width="Auto"/>
+                                    <DataGridTextColumn  Header="NicenessOfLocals" Binding="{Binding NicenessOfLocals}" Width="Auto"/>
+
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Path=DataContext.UpdateLogRelay}" CommandParameter="{Binding LogID}">Edit</Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Path=DataContext.RemoveLogCommand}" CommandParameter="{Binding LogID}">-</Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+
+                    </TabControl>
+                    <Button  Grid.Column="0"  Command="{Binding SaveNewLogCommandRelay}" CommandParameter="AddLogEntryView" VerticalAlignment="Top" Height="23" Margin="228,5,0,0" HorizontalAlignment="Left" Width="58">New Log</Button>
+                </Grid>
+            </Grid>
+        </Grid>
+
+
+    </Grid>
+</UserControl>
