@@ -22,7 +22,7 @@ namespace Swe2_tour_planer.Services
             TourHtml += HeadingHtml("2", "Location");
             TourHtml += $"<img width=500 height=500 src=\"{config["MapQuest:Location"]+Tour.ImgSource}\">";
             TourHtml += ParagraphHtml($"From: {Tour.From}<br>Too: {Tour.Too}");
-
+            TourHtml += ParagraphHtml($"Distance: {Tour.TourDistanceInKm}");
             TourHtml += HeadingHtml("2", "Description");
             TourHtml += ParagraphHtml(Tour.Description);
 

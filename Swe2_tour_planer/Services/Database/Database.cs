@@ -53,7 +53,8 @@ namespace Swe2_tour_planer.Services
                                         imgSource varchar,
                                         fromL varchar,
                                         too varchar,
-                                        maneuvers varchar
+                                        maneuvers varchar,
+                                        tourdistance varchar
                                     );";
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
@@ -107,7 +108,7 @@ namespace Swe2_tour_planer.Services
 
                     while (reader.Read())
                     {
-                        var item = new TourEntry(Int32.Parse(reader[0].ToString()), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString());
+                        var item = new TourEntry(Int32.Parse(reader[0].ToString()), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(),reader[7].ToString());
                         TourList.Add(item);
                     }
                     log.Debug("get List of tours success");

@@ -14,7 +14,7 @@ namespace Swe2_tour_planer.Services
         {
             try
             {
-                string querystring = @$"Insert into TourEntry(title,description,imgSource,fromL,too,maneuvers) values (@title,@description,@ImageSource,@From,@Too,@json);";
+                string querystring = @$"Insert into TourEntry(title,description,imgSource,fromL,too,maneuvers,tourdistance) values (@title,@description,@ImageSource,@From,@Too,@json,@tourdistance);";
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
                     command.Parameters.AddWithValue("title", newEntry.Title);
@@ -23,7 +23,7 @@ namespace Swe2_tour_planer.Services
                     command.Parameters.AddWithValue("From", newEntry.From);
                     command.Parameters.AddWithValue("Too", newEntry.Too);
                     command.Parameters.AddWithValue("json", JsonConvert.SerializeObject(newEntry.Maneuvers));
-
+                    command.Parameters.AddWithValue("tourdistance", newEntry.TourDistance);
                     await command.ExecuteNonQueryAsync();
                     querystring = @$"Select max(tourID) from TourEntry";
                     using (NpgsqlCommand command2 = new NpgsqlCommand(querystring, conn))
@@ -84,7 +84,7 @@ namespace Swe2_tour_planer.Services
         {
             try
             {
-                string querystring = @$"Update TourEntry set title=@title,description=@description,imgSource=@ImageSource,maneuvers=@json,fromL=@From,too=@Too where tourID=@tourID";
+                string querystring = @$"Update TourEntry set title=@title,description=@description,imgSource=@ImageSource,maneuvers=@json,fromL=@From,too=@Too,tourdistance=@tourdistance where tourID=@tourID";
                 log.Debug(querystring);
                 using (NpgsqlCommand command = new NpgsqlCommand(querystring, conn))
                 {
@@ -95,6 +95,7 @@ namespace Swe2_tour_planer.Services
                     command.Parameters.AddWithValue("Too", updateEntry.Too);
                     command.Parameters.AddWithValue("json", JsonConvert.SerializeObject(updateEntry.Maneuvers));
                     command.Parameters.AddWithValue("tourID", updateEntry.TourID);
+                    command.Parameters.AddWithValue("tourdistance", updateEntry.TourDistance);
                     await command.ExecuteNonQueryAsync();
                 }
                 conn.Close();

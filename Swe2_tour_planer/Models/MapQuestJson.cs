@@ -363,6 +363,14 @@ namespace Swe2_tour_planer.Models
 
         public class Route
         {
+            [JsonIgnore]
+            public string DistanceInKm
+            {
+                get
+                {
+                    return this.DistanceInKm();
+                }
+            }
             [JsonProperty("hasTollRoad")]
             public bool HasTollRoad { get; set; }
 

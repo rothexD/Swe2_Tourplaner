@@ -48,7 +48,7 @@ namespace Swe2_tour_planer.Services
                 throw;
             }
         }
-        public async Task<List<CustomManeuvers>> GetRouteAsync(string from, string too)
+        public async Task<(string,List<CustomManeuvers>)> GetRouteAsync(string from, string too)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace Swe2_tour_planer.Services
                     });
                 });
                 log.Info("successful Route");
-                return customMan;
+                return (Routedescription.Route.Distance.ToString(),customMan);
             }
             catch (Exception e)
             {

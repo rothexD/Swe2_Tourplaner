@@ -142,7 +142,7 @@ namespace Swe2_tour_planer.Services
                 var route = await _mapQuest.GetRouteAsync(from, too);
                 var location = await _mapQuest.GetMapImageAsync(from, too);
 
-                var Tour = new TourEntry(0, title, description, location, from, too, JsonConvert.SerializeObject(route));
+                var Tour = new TourEntry(0, title, description, location, from, too, JsonConvert.SerializeObject(route.Item2),route.Item1);
                 var a = await _database.TourData.AddTourToDatabaseAsync(Tour, _database.Create());
                 return a;
             }
@@ -186,12 +186,15 @@ namespace Swe2_tour_planer.Services
         {
             try
             {
-                List<MapQuestJson.CustomManeuvers> Route = await _mapQuest.GetRouteAsync(from, too);         
-                string Location = await _mapQuest.GetMapImageAsync(from, too);
+                string Distance = "";
+                List<MapQuestJson.CustomManeuvers> Route;
+                string Location = "";
 
                 if(_TourbeforeChanges.From != from || _TourbeforeChanges.Too != too)
                 {
-                    Route = await _mapQuest.GetRouteAsync(from, too);
+                    (string, List<MapQuestJson.CustomManeuvers>) RouteAndDistance = await _mapQuest.GetRouteAsync(from, too);
+                    Route = RouteAndDistance.Item2;
+                    Distance = RouteAndDistance.Item1;
                     Location = await _mapQuest.GetMapImageAsync(from, too);
                     _fileSystemAccess.RemoveFileFromFileSystem(_TourbeforeChanges.ImgSource);
                 }
@@ -199,8 +202,9 @@ namespace Swe2_tour_planer.Services
                 {
                     Route = _TourbeforeChanges.Maneuvers.ToList();
                     Location = _TourbeforeChanges.ImgSource;
+                    Distance = _TourbeforeChanges.TourDistance;
                 }                          
-                var Tour = new TourEntry(id, title, description, Location, from, too, Route);
+                var Tour = new TourEntry(id, title, description, Location, from, too, Route,Distance);
                 await _database.TourData.UpdateTourInDatabaseAsync(Tour, _database.Create());
                 return Tour;
             }
@@ -223,6 +227,7 @@ namespace Swe2_tour_planer.Services
                     if (x.Tour.From.Contains(searchbar)) { return true; }
                     if (x.Tour.Too.Contains(searchbar)) { return true; }
                     if (x.Tour.Description.Contains(searchbar)) { return true; }
+                    if (x.Tour.TourDistance.Contains(searchbar)) { return true; }
                     bool inLogs = false;
                     x.Logs.ForEach(y =>
                     {

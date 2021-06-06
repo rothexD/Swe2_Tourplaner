@@ -17,10 +17,11 @@ namespace Swe2_tour_planer.Models
         private string _imgSource;
         private string _from;
         private string _too;
+        private string _tourdistance;
         private ObservableCollection<CustomManeuvers> _maneuvers = new ObservableCollection<CustomManeuvers>();
 
         [JsonConstructor]
-        public TourEntry(int tourID, string title, string description, string _imgSource, string from, string too, string Jsonmaneuvers)
+        public TourEntry(int tourID, string title, string description, string _imgSource, string from, string too, string Jsonmaneuvers,string tourdistance)
         {
             this.Title = title;
             this.Description = description;
@@ -28,9 +29,10 @@ namespace Swe2_tour_planer.Models
             this._tourID = tourID;
             this.From = from;
             this.Too = too;
+            this.TourDistance = tourdistance;
             Maneuvers = JsonConvert.DeserializeObject<ObservableCollection<CustomManeuvers>>(Jsonmaneuvers ?? "");
         }
-        public TourEntry(int tourID, string title, string description, string _imgSource, string from, string too, List<CustomManeuvers> maneuvers)
+        public TourEntry(int tourID, string title, string description, string _imgSource, string from, string too, List<CustomManeuvers> maneuvers, string tourdistance)
         {
             this.Title = title;
             this.Description = description;
@@ -38,8 +40,22 @@ namespace Swe2_tour_planer.Models
             this._tourID = tourID;
             this.From = from;
             this.Too = too;
+            this.TourDistance = tourdistance;
             maneuvers.ForEach(x => Maneuvers.Add(x));
         }
+        public string TourDistanceInKm
+        {
+            get
+            {
+                float inMiles = float.Parse(this.TourDistance);
+                float withMath = (inMiles * 1.609344f);
+                return withMath.ToString("0.00"); ;
+            }
+            set
+            {
+                return;
+            }
+         }
         public ObservableCollection<CustomManeuvers> Maneuvers
         {
             get => this._maneuvers;
@@ -49,7 +65,6 @@ namespace Swe2_tour_planer.Models
                 this.OnPropertyChanged();
             }
         }
-
         public string Too
         {
             get => this._too;
@@ -59,6 +74,18 @@ namespace Swe2_tour_planer.Models
                 this.OnPropertyChanged();
             }
         }
+
+        public string TourDistance
+        {
+            get => this._tourdistance;
+            set
+            {
+                this._tourdistance = value;
+                this.OnPropertyChanged();
+                this.OnPropertyChanged(nameof(TourDistanceInKm));
+            }
+        }
+
         public string From
         {
             get => this._from;

@@ -8,5 +8,12 @@
             float withMath = (inMiles * 1.609344f);
             return withMath.ToString("0.00"); ;
         }
+        static public string DistanceInKm(this MapQuestJson.Route single)
+        {
+            float inMiles = (float)single.Distance;
+            float withMath = (inMiles * 1.609344f);
+            return withMath.ToString("0.00"); ;
+        }
     }
 }
+

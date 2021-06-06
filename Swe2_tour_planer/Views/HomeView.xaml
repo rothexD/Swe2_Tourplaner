@@ -89,15 +89,15 @@
                                     <DataGridTextColumn Header="Narrative" Binding="{Binding Narrative}" Width="Auto"/>
                                     <DataGridTextColumn  Header="Streets" Binding="{Binding StreetsAsString}" Width="Auto"/>
                                     <DataGridTextColumn Header="DirectionName" Binding="{Binding DirectionName}" Width="Auto"/>
-                                    <DataGridTextColumn Header="DistanceInMiles" Binding="{Binding DistanceInKm}" Width="Auto"/>
+                                    <DataGridTextColumn Header="DistanceInKm" Binding="{Binding DistanceInKm}" Width="Auto"/>
                                     <DataGridTextColumn  Header="Index" Binding="{Binding Index}" Width="Auto"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </TabItem>
-                        <TabItem Header="Description">
+                        <TabItem Header="Description" Height="20" VerticalAlignment="Top">
                             <Grid Background="#FFE5E5E5">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="100"/>
+                                    <RowDefinition Height="120"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Height="Auto" FontSize="15" Margin="0,20,0,0">
@@ -109,6 +109,10 @@
                                       <Run Text="{Binding CurrentActiveTour.Too}"/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="0" Height="Auto" Margin="0,60,0,0" FontSize="15">
+                                      <Run Text="Distance: "/>
+                                      <Run Text="{Binding CurrentActiveTour.TourDistanceInKm}"/>
+                                </TextBlock>
+                                <TextBlock Grid.Row="0" Height="Auto" Margin="0,80,0,0" FontSize="15">
                                       <Run Text="Description: "/>
                                 </TextBlock>
                                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" Margin="0,0,0,0" FontSize="14">
