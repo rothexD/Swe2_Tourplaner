@@ -23,10 +23,10 @@ namespace Unit_Tests
         private LogEntry _tempstorageLog;
         private string _tempstringstorage;
 
-        static private TourEntry tour = new TourEntry(0, "wien berlin", "eine coole reise...", "29919324174129278439.jpg", "vienna", "berlin", "[]","1");
-        static private TourEntry tour2 = new TourEntry(1, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "2");
-        static private TourEntry tour3 = new TourEntry(2, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "3");
-        static private TourEntry tour8 = new TourEntry(7, "bla", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "4");
+        static private TourEntry tour = new TourEntry(0, "wien berlin", "eine coole reise", "29919324174129278439.jpg", "vienna", "berlin", "[]","1");
+        static private TourEntry tour2 = new TourEntry(1, "wien hamburg", "eine coole reise", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "2");
+        static private TourEntry tour3 = new TourEntry(2, "wien hamburg", "eine coole reise", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "3");
+        static private TourEntry tour8 = new TourEntry(7, "bla", "eine coole reise", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "4");
         static private LogEntry log = new LogEntry(0, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
         static private LogsAndTours logsAndTour1 = new LogsAndTours()
         {
@@ -59,10 +59,10 @@ namespace Unit_Tests
         }
         private void MoreLogsAndTours()
         {
-            TourEntry tour4 = new TourEntry(3, "wien berlin", "eine coole reise...", "29919324174129278439.jpg", "vienna", "berlin", "[]","2");
-            TourEntry tour5 = new TourEntry(4, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "5");
-            TourEntry tour6 = new TourEntry(5, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "6");
-            TourEntry tour7 = new TourEntry(6, "wien hamburg", "eine coole reise...", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "7");
+            TourEntry tour4 = new TourEntry(3, "wien berlin", "eine coole reise", "29919324174129278439.jpg", "vienna", "berlin", "[]","2");
+            TourEntry tour5 = new TourEntry(4, "wien hamburg", "eine coole reise", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "5");
+            TourEntry tour6 = new TourEntry(5, "wien hamburg", "eine coole reise", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "6");
+            TourEntry tour7 = new TourEntry(6, "wien hamburg", "eine coole reise", "29919324174129278439.jpg", "vienna", "hamburg", "[]", "7");
             LogEntry log2 = new LogEntry(1, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
             LogEntry log3 = new LogEntry(2, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
             LogEntry log4 = new LogEntry(3, 0, DateTime.Now, "abc", "5", "a", "aaa", "5.5", "5.2", "sunny", "no traffic", "very nice");
@@ -112,7 +112,7 @@ namespace Unit_Tests
             var ImportExportHelper = new Mock<IFileSystemAccess>();
             List<LogsAndTours> tempList = new List<LogsAndTours>() { new LogsAndTours() { Tour = tour, Logs = new List<LogEntry>() } };
             ImportExportHelper.Setup(x => x.SaveToFileAsync(It.IsAny<string>(), It.IsAny<string>())).Callback((string a, string b) => _tempstringstorage = b);
-            ImportExportHelper.Setup(x => x.ImportFromJsonFileAsync(It.IsAny<string>())).Returns(Task.FromResult<string>("[{\"Tour\":{\"Maneuvers\":[],\"Too\":\"berlin\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]"));
+            ImportExportHelper.Setup(x => x.ImportFromJsonFileAsync(It.IsAny<string>())).Returns(Task.FromResult<string>("[{\"Tour\":{\"Maneuvers\":[],\"Too\":\"berlin\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]"));
 
             _service = new ServicesAccess(DatabaseMoq.Object, MapQuestMoq.Object, ImportExportHelper.Object, new DinkToPdfClass());
         }
@@ -338,7 +338,7 @@ namespace Unit_Tests
             Assert.AreEqual("wien berlin", _tempstorageEntry.Title);
             Assert.AreEqual("vienna", _tempstorageEntry.From);
             Assert.AreEqual("berlin", _tempstorageEntry.Too);
-            Assert.AreEqual("eine coole reise...", _tempstorageEntry.Description);
+            Assert.AreEqual("eine coole reise", _tempstorageEntry.Description);
         }
         [Test]
         public void ExportToFile()
@@ -350,7 +350,7 @@ namespace Unit_Tests
 
             _tempstringstorage = _tempstringstorage.Replace('.', ',');
 
-            Assert.AreEqual("[{\"Tour\":{\"TourDistanceInKm\":\"1,61\",\"Maneuvers\":[],\"Too\":\"berlin\",\"TourDistance\":\"1\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]", _tempstringstorage);
+            Assert.AreEqual("[{\"Tour\":{\"TourDistanceInKm\":\"1,61\",\"Maneuvers\":[],\"Too\":\"berlin\",\"TourDistance\":\"1\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise\",\"ImgSource\":\"29919324174129278439,jpg\"},\"Logs\":[]}]", _tempstringstorage);
         }
 
 
