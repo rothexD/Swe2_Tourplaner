@@ -231,6 +231,7 @@ namespace Unit_Tests
             };
 
             result = customManeuvers.DistanceInKm();
+            result = result.Replace('.', ',');
 
             Assert.AreEqual("1,61", result);
         }
@@ -347,7 +348,8 @@ namespace Unit_Tests
 
             _ = _service.ExportFileAsync("a", tempList2);
 
-            Console.WriteLine(_tempstringstorage);
+            _tempstringstorage = _tempstringstorage.Replace('.', ',');
+
             Assert.AreEqual("[{\"Tour\":{\"TourDistanceInKm\":\"1,61\",\"Maneuvers\":[],\"Too\":\"berlin\",\"TourDistance\":\"1\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]", _tempstringstorage);
         }
 
