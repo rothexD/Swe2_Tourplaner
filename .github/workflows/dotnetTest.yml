@@ -22,6 +22,6 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Configure Enviroment
-      run: echo \"A\" > \"Swe2_Tourplaner\Swe2_Tourplaner\Unit Tests\bin\Debug\net5.0-windows\Appsettings.json"
+      run: echo \"A\" > \".\Swe2_Tourplaner\Swe2_Tourplaner\Unit Tests\bin\Debug\net5.0-windows\Appsettings.json"
     - name: Test
       run: dotnet test --no-build --verbosity normal
