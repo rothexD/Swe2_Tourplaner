@@ -185,7 +185,7 @@ namespace Unit_Tests
         public void SwitchViewModel()
         {
 
-            MainViewModel mainViewModel = new MainViewModel();
+            MainViewModel mainViewModel = new MainViewModel(false);
             Type result;
 
             mainViewModel.RequestChangeViewModel("ReportView");
@@ -197,8 +197,7 @@ namespace Unit_Tests
         public void ViewModelToStringDoesNotexist()
         {
 
-
-            MainViewModel mainViewModel = new MainViewModel();
+            MainViewModel mainViewModel = new MainViewModel(false);
             Type result;
 
             mainViewModel.RequestChangeViewModel("hansView");
@@ -212,7 +211,7 @@ namespace Unit_Tests
         public void ViewModelFromStringNull()
         {
 
-            MainViewModel mainViewModel = new MainViewModel();
+            MainViewModel mainViewModel = new MainViewModel(false);
             Type result;
 
             mainViewModel.RequestChangeViewModel(null);
@@ -349,7 +348,7 @@ namespace Unit_Tests
             _ = _service.ExportFileAsync("a", tempList2);
 
             Console.WriteLine(_tempstringstorage);
-            Assert.AreEqual("[{\"Tour\":{\"Maneuvers\":[],\"Too\":\"berlin\",\"TourDistance\":\"1\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]", _tempstringstorage);
+            Assert.AreEqual("[{\"Tour\":{\"TourDistanceInKm\":\"1,61\",\"Maneuvers\":[],\"Too\":\"berlin\",\"TourDistance\":\"1\",\"From\":\"vienna\",\"TourID\":0,\"Title\":\"wien berlin\",\"Description\":\"eine coole reise...\",\"ImgSource\":\"29919324174129278439.jpg\"},\"Logs\":[]}]", _tempstringstorage);
         }
 
 

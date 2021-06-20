@@ -21,12 +21,12 @@ namespace Swe2_tour_planer.ViewModels
             get { return _selectedViewModel; }
             private set { _selectedViewModel = value; OnPropertyChanged(nameof(SelectedViewModel)); }
         }
-        public MainViewModel()
+        public MainViewModel(bool shouldConfigDatabase = true)
         {
             try
             {
                 var fileSystem = new FileSystemAccess();
-                var service = new ServicesAccess(new Database(true), new MapQuestApi(fileSystem), fileSystem, new DinkToPdfClass());
+                var service = new ServicesAccess(new Database(shouldConfigDatabase), new MapQuestApi(fileSystem), fileSystem, new DinkToPdfClass());
                 var home = new HomeViewModel(this, service);
 
                 ViewList.Add("HomeView", home);
